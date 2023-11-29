@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Database Test Criminal Management System</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/typography.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/utilities.css') }}">
+    <script defer src="{{ url_for('static', filename='js/script.js') }}"></script>
+</head>
+
+<body>
+    <h1>Police Information Table</h1>
+<!--
+    <form action="/add_course" method="post">
+        <input type="text" name="course_id" placeholder="Course ID" required>
+        <input type="text" name="call_id" placeholder="Call ID" required>
+        <input type="text" name="course_name" placeholder="Course Name" required>
+        <input type="number" name="credits" placeholder="Credits" required>
+        <button type="submit">Add Class</button>
+    </form>
+-->
+
+    <div class="navbar">
+      <a class="nav-title-link" href="{{ url_for('index') }}">
+      <span class="nav-title">Home Page</span>
+    </a>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Badge Number</th>
+                <th>Name</th>
+                <th>Precinct</th>
+                <th>Phone Number</th>
+                <th>Officer Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for officer in Police_officer_info %}
+                <tr>
+                    <td>{{ officer.Badge_number }}</td>
+                    <td>{{ officer.Name }}</td>
+                    <td>{{ officer.Precinct }}</td>
+                    <td>{{ officer.Phone_contact }}</td>
+                    <td>{{ officer.officer_Status }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

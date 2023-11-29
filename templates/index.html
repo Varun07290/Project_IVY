@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+
+	<title>NYU CS 3083: Criminal Database Management System</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/typography.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/utilities.css') }}">
+    <script defer src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+	</head>
+	<body>
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <a class="nav-title-link" href="{{ url_for('index') }}">
+        <span class="nav-title">Home Page</span>
+      </a>
+    </div>
+
+    <!-- MAIN PAGE CONTENT -->
+    <div id="main-content">
+
+      <!-- PORTFOLIO HEADER -->
+      <div id="portfolio-header">
+        <div id="portfolio-header-image-container">
+
+          <img src="{{ url_for('static', filename='assets/nyu_logo.jpeg') }}" class="portfolio-header-image">
+          
+        </div>
+
+        <div id="portfolio-header-text-container">
+            <div class="header-text">
+              <span class="main-title">Welcome User, to NYU's Criminal Database Management System</span>
+              <div class="body-text">
+                Created by Database Developers: Varun Aravapalli, Ishaan Poojari and Yiqiao Zhou
+              </div>
+            </div>
+
+        </div>
+    </div>
+
+        <div class="container">
+            <div class="button-container">
+                <a class="button_test" href="{{ url_for('GET_police_info') }}">View Police Information</a>
+                <a class="button_test" href="{{url_for('GET_criminal_info')}}">View Criminal Information</a>
+                <a class="button_test" href="#">View Appeals Information</a>
+            </div>
+        </div>
+
+    
+
+    <!-- FOOTER 
+
+    <div id="footer">
+      <a class="icon-link" target="_blank" href="https://linkedin.com/in/varunaravapalli">
+        <image src="./assets/linkedin_logo.png" class="footer-icon"/>
+      </a>
+
+      <a class="icon-link" target="_blank" href="https://github.com/Varun07290">
+        <image src="./assets/github_icon.png" class="footer-icon"/>
+      </a>
+      
+      <a class="icon-link" href="mailto:varun.a@nyu.edu">
+        <image src="./assets/email_icon.png" class="footer-icon"/>
+      </a>
+    </div>
+
+    -->
+	</body>
+</html>

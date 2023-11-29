@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Database Test Criminal Management System</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/typography.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/utilities.css') }}">
+    <script defer src="{{ url_for('static', filename='js/script.js') }}"></script>
+</head>
+
+<body>
+    <h1>Police Information Table</h1>
+
+
+    <div class="navbar">
+      <a class="nav-title-link" href="{{ url_for('index') }}">
+      <span class="nav-title">Home Page</span>
+    </a>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Badge Number</th>
+                <th>Name</th>
+                <th>Precinct</th>
+                <th>Phone Number</th>
+                <th>Officer Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for officer in Police_officer_info %}
+                <tr>
+                    <td>{{ officer.Badge_number }}</td>
+                    <td>{{ officer.Name }}</td>
+                    <td>{{ officer.Precinct }}</td>
+                    <td>{{ officer.Phone_contact }}</td>
+                    <td>{{ officer.officer_Status }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h1>Add New Officer</h1>
+
+
+    <form action="/POST_police_officer" method="post">
+      <input type="text" name="Badge_number" placeholder="Badge Number" required>
+      <input type="text" name="Name" placeholder="Name" required>
+      <input type="text" name="Precinct" placeholder="Precinct" required>
+      <input type="text" name="Phone_contact" placeholder="Phone Number" required>
+      <input type="text" name="officer_Status" placeholder="Status" required>
+      <button type="submit">Submit</button>
+  </form>
+
+  {% if error %}
+  <div class="error-message">{{ error }}</div>
+  {% endif %}
+
+  <tbody>
+    {% for officer in Police_officer_info %}
+        <tr>
+            <td>{{ officer.Badge_number }}</td>
+            <td>{{ officer.Name }}</td>
+            <td>{{ officer.Precinct }}</td>
+            <td>{{ officer.Phone_contact }}</td>
+            <td>{{ officer.officer_Status }}</td>
+            <td>
+                <!-- Delete button -->
+                <form action="{{ url_for('DELETE_police_officer', badge_number=officer.Badge_number) }}" method="post">
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+</tbody>
+
+</body>
+</html>
