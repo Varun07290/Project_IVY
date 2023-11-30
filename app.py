@@ -148,31 +148,57 @@ def GET_crimecode_info():
     crimecode_info = find_crimecode_info()
     return render_template('Crime_Code_Information_Page.html',crimecode_info = crimecode_info)
 
+@app.route('/POST_crimecode', methods = ['POST'])
+def POST_crimecode():
+    try:
+        Crimecode = request.form['Crime_code']
+        codedes = request.form['Code_description']
+        cursor = db.cursor()
+        query = 'INSERT INTO Crime_codes (Crime_code,Code_description) VALUES (%s,%s)'
+        cursor.execute(query,(Crimecode, codedes))
+        db.commit()
+        cursor.close()
+        return redirect(url_for('GET_crimecode_info'))
+    except IntegrityError as e:
+        error_message = "This crime code is already in the database."
+        crimecode_info = find_crimecode_info()
+        return render_template('Crime_Code_Information_Page.html',crimecode_info = crimecode_info, error=error_message)
 
-# @app.route('/POST_criminal', methods = ['POST'])
-# def POST_criminal():
-#     try:
-#         Criminal_ID = request.form['Criminal_ID']
-#         last_name = request.form['Last']
-#         first_name = request.form['First']
-#         phone_num = request.form['Phone']
-#         Street = request.form['Street']
-#         City = request.form['City']
-#         State = request.form['State']
-#         Zip = request.form['Zip']
-#         violent_status = request.form['V_status']
-#         probation_status = request.form['P_status']
-#         cursor = db.cursor()
-#         query = 'INSERT INTO Criminals (Criminal_ID,Last,First,Phone,Street,City,State,Zip,V_status,P_status) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
-#         cursor.execute(query,(Criminal_ID,last_name,first_name,phone_num,Street,City,State,Zip,violent_status,probation_status))
-#         db.commit()
-#         cursor.close()
-#         return redirect(url_for('GET_criminal_info'))
-#     except IntegrityError as e:
-#         error_message = "This criminal is already in the database."
-#         criminal_info = find_criminal_info()
-#         return render_template('Criminal_Information_Page.html',criminal_info = criminal_info, error=error_message)
+#Crime method
 
+
+def find_crime_info():
+    cursor = db.cursor()
+    cursor.execute('SELECT * FROM Crimes')
+    crime_raw = cursor.fetchall()
+    crime_info = [{'Crime_ID': row[0], 'Criminal_ID': row[1], 'Classification': row[2], 'Date_charged': row[3], 'Status': row[4], 'Hearing_date': row[5], 'Appeal_cut_date': row[6]} for row in crime_raw]
+    return crime_info
+
+@app.route('/GET_crime_info', methods = ['GET']) # Get is the default btw
+def GET_crime_info():
+    crime_info = find_crime_info()
+    return render_template('Crime_Information_Page.html',crime_info = crime_info)
+
+@app.route('/POST_crime', methods = ['POST'])
+def POST_crime():
+    try:
+        crimeid = request.form['Crime_ID']
+        criminalid = request.form['Criminal_ID']
+        Classification = request.form['Classification']
+        Date_charged = request.form['Date_charged']
+        Status = request.form['Status']
+        Hearing_date = request.form['Hearing_date']
+        Appeal_cut_date = request.form['Appeal_cut_date']
+        cursor = db.cursor()
+        query = 'INSERT INTO Crimes (Crime_ID, Criminal_ID, Classification, Date_charged, Status, Hearing_date, Appeal_cut_date) VALUES (%s,%s,%s,%s,%s,%s,%s)'
+        cursor.execute(query,(crimeid, criminalid, Classification, Date_charged, Status, Hearing_date, Appeal_cut_date))
+        db.commit()
+        cursor.close()
+        return redirect(url_for('GET_crime_info'))
+    except IntegrityError as e:
+        error_message = "This crime is already in the database."
+        crime_info = find_crime_info()
+        return render_template('Crime_Information_Page.html',crime_info = crime_info, error=error_message)
 
 
 
