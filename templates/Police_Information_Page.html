@@ -2,7 +2,6 @@
 <html>
 <head>
     <title>Database Test Criminal Management System</title>
-
     <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/typography.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/utilities.css') }}">
@@ -10,47 +9,61 @@
 </head>
 
 <body>
-    <h1>Police Information Table</h1>
+    <h1>Current Officer Information</h1>
 
 
     <div class="navbar">
       <a class="nav-title-link" href="{{ url_for('index') }}">
       <span class="nav-title">Home Page</span>
-    </a>
+    </a>`
     </div>
 
     <table>
         <thead>
             <tr>
-                <th>Badge Number</th>
-                <th>Name</th>
+                <th>Officer ID</th>
+                <th>Last Name</th>
+                <th>First Name</th>
                 <th>Precinct</th>
+                <th>Badge Number</th>
                 <th>Phone Number</th>
-                <th>Officer Status</th>
+                <th>Officer Status (Active / Inactive)</th>
             </tr>
         </thead>
         <tbody>
-            {% for officer in Police_officer_info %}
+            {% for officer in officer_info %}
                 <tr>
-                    <td>{{ officer.Badge_number }}</td>
-                    <td>{{ officer.Name }}</td>
+                    <td>{{ officer.Officer_ID }}</td>
+                    <td>{{ officer.Last }}</td>
+                    <td>{{ officer.First }}</td>
                     <td>{{ officer.Precinct }}</td>
-                    <td>{{ officer.Phone_contact }}</td>
-                    <td>{{ officer.officer_Status }}</td>
+                    <td>{{ officer.Badge }}</td>
+                    <td>{{ officer.Phone }}</td>
+                    <td>{{ officer.Status }}</td>
+                    <td>
+                    <!-- Edit Button  -->
+                    <!-- Delete button -->
+                        <form action="{{ url_for('delete_officer') }}" method="post">
+                            <input type="hidden" name="officer_id" value="{{ officer.Officer_ID }}">
+                            <button type="submit" class = "button delete-button">Delete</button>
+                        </form>
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>
+
     </table>
 
     <h1>Add New Officer</h1>
 
-
-    <form action="/POST_police_officer" method="post">
-      <input type="text" name="Badge_number" placeholder="Badge Number" required>
-      <input type="text" name="Name" placeholder="Name" required>
+    <form action="/POST_officer" method="post">
+      <input type="text" name="Officer_ID" placeholder="Officer ID" required>
+      <input type="text" name="Last" placeholder="Last Name" required>
+      <input type="text" name="First" placeholder="First Name" required>
       <input type="text" name="Precinct" placeholder="Precinct" required>
-      <input type="text" name="Phone_contact" placeholder="Phone Number" required>
-      <input type="text" name="officer_Status" placeholder="Status" required>
+      <input type="text" name="Badge" placeholder="Badge Number" required>
+      <input type="text" name="Phone" placeholder="Phone Number" required>
+      <input type="text" name="Status" placeholder="Officer Status" required>
       <button type="submit">Submit</button>
   </form>
 
@@ -58,23 +71,6 @@
   <div class="error-message">{{ error }}</div>
   {% endif %}
 
-  <tbody>
-    {% for officer in Police_officer_info %}
-        <tr>
-            <td>{{ officer.Badge_number }}</td>
-            <td>{{ officer.Name }}</td>
-            <td>{{ officer.Precinct }}</td>
-            <td>{{ officer.Phone_contact }}</td>
-            <td>{{ officer.officer_Status }}</td>
-            <td>
-                <!-- Delete button -->
-                <form action="{{ url_for('DELETE_police_officer', badge_number=officer.Badge_number) }}" method="post">
-                    <button type="submit">Delete</button>
-                </form>
-            </td>
-        </tr>
-    {% endfor %}
-</tbody>
-
 </body>
 </html>
+

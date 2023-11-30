@@ -1,17 +1,20 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 import mysql.connector
-from mysql.connector.errors import IntegrityError
+from mysql.connector.errors import IntegrityError, DataError, DatabaseError
+
 
 
 # POST, GET, PUT, and DELETE (API Methods that we need to implement)
 app = Flask(__name__)
+app.secret_key = 'team_ivy'
+
 
 config = {
   'user': 'root',
   'password': 'root',
   'host': 'localhost',
   'unix_socket': '/Applications/MAMP/tmp/mysql/mysql.sock',
-  'database': 'Project_IVY',
+  'database': 'final_project_testing_1',
   'raise_on_warnings': True
 }
 
@@ -22,55 +25,69 @@ def index():
     return render_template('index.html')
 
 
-# Police Officer Methods Start Here
+#  Officer Methods Start Here
 
-def find_police_info():
+def find_officer_info():
     cursor = db.cursor()
-    cursor.execute('SELECT * FROM Police_officer')
-    Police_officer_raw = cursor.fetchall()
-    Police_officer_info = [{'Badge_number': row[0], 'Name': row[1], 'Precinct': row[2], 'Phone_contact': row[3], 'officer_Status': row[4]} for row in Police_officer_raw]
-    return Police_officer_info
+    cursor.execute('SELECT * FROM Officers')
+    officer_raw = cursor.fetchall()
+    officer_info = [{'Officer_ID': row[0], 'Last': row[1], 'First': row[2], 'Precinct': row[3], 'Badge': row[4], 'Phone': row[5], 'Status': row[6]} for row in officer_raw]
+    return officer_info
 
-@app.route('/GET_police_info', methods = ['GET']) # Get is the default btw
-def GET_police_info():
-    Police_officer_info = find_police_info()
-    return render_template('Police_Information_Page.html',Police_officer_info = Police_officer_info)
+@app.route('/GET_officer_info', methods = ['GET']) # Get is the default btw
+def GET_officer_info():
+    officer_info = find_officer_info()
+    return render_template('Police_Information_Page.html', officer_info = officer_info)
 
 
-@app.route('/POST_police_officer', methods = ['POST'])
-def POST_police_officer():
+@app.route('/POST_officer', methods = ['POST'])
+def POST_officer():
     try:
-        badge_num = request.form['Badge_number']
-        name = request.form['Name']
-        precinct = request.form['Precinct']
-        phone_num = request.form['Phone_contact']
-        status = request.form['officer_Status']
+        Officer_ID = request.form['Officer_ID']
+        Last = request.form['Last']
+        First = request.form['First']
+        Precinct = request.form['Precinct']
+        Badge = request.form['Badge']
+        Phone = request.form['Phone']
+        Status = request.form['Status']
         cursor = db.cursor()
-        query = 'INSERT INTO Police_officer (Badge_number,Name,Precinct,Phone_contact,officer_Status) VALUES (%s,%s,%s,%s,%s)'
-        cursor.execute(query,(badge_num,name,precinct,phone_num,status))
+        query = 'INSERT INTO Officers (Officer_ID, Last, First, Precinct, Badge, Phone, Status) VALUES (%s,%s,%s,%s,%s,%s,%s)'
+        cursor.execute(query,(Officer_ID, Last, First, Precinct, Badge, Phone, Status))
         db.commit()
         cursor.close()
-        return redirect(url_for('GET_police_info'))
+        return redirect(url_for('GET_officer_info'))
     except IntegrityError as e:
         error_message = "A police officer with this badge number already exists."
-        Police_officer_info = find_police_info()
-        return render_template('Police_Information_Page.html',Police_officer_info = Police_officer_info, error=error_message)
+        officer_info = find_officer_info()
+        return render_template('Police_Information_Page.html', officer_info = officer_info, error=error_message)
+    except DataError as de:
+        error_message = "Please input appropriate values for the fields"
+        officer_info = find_officer_info()
+        return render_template('Police_Information_Page.html', officer_info = officer_info, error=error_message)
+    except DatabaseError as de:
+        error_message = "Please input appropriate values for the fields"
+        officer_info = find_officer_info()
+        return render_template('Police_Information_Page.html', officer_info = officer_info, error=error_message)
 
-
-@app.route('/DELETE_police_officer/<badge_number>', methods = ['DELETE'])
-def DELETE_police_officer(badge_number):
+@app.route('/delete_officer', methods=['POST'])
+def delete_officer():
+    officer_id = request.form['officer_id']
     try:
-        cursor = db.cursor
-        query = 'DELETE FROM Police_officer WHERE Badge_num = %s'
-        cursor.execute(query,(badge_number,))
+        cursor = db.cursor()
+        cursor.execute('DELETE FROM Officers WHERE Officer_ID = %s', (officer_id,))
         db.commit()
-    except Exception as e:
-        print(e)
-
-    finally:
         cursor.close()
+        flash('Officer deleted successfully.')
+    except Exception as e:
+        db.rollback()
+        flash('Error occurred while deleting the officer.')
+        print(e)
+    return redirect(url_for('GET_officer_info'))
+ 
+    
 
-    return redirect(url_for('index'))     
+
+
 
 
 # Criminal Methods
