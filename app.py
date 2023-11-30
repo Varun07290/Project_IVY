@@ -9,16 +9,18 @@ app = Flask(__name__)
 app.secret_key = 'team_ivy'
 
 
-config = {
-  'user': 'root',
-  'password': 'root',
-  'host': 'localhost',
-  'unix_socket': '/Applications/MAMP/tmp/mysql/mysql.sock',
-  'database': 'final_project_testing_1',
-  'raise_on_warnings': True
-}
+# config = {
+#   'user': 'root',
+#   'password': 'root',
+#   'host': 'localhost',
+#   #'unix_socket': '/Applications/XAMPP/xamppfiles/var/mysql/mysql.sock',
+#   'database': 'proj',
+#   #'raise_on_warnings': True
+# }
 
-db = mysql.connector.connect(**config)
+# db = mysql.connector.connect(**config)
+db = mysql.connector.connect(host = 'localhost', user = 'root', password = '', database = 'proj')
+
 
 @app.route('/')
 def index():
@@ -95,7 +97,7 @@ def find_criminal_info():
     cursor = db.cursor()
     cursor.execute('SELECT * FROM Criminals')
     criminal_raw = cursor.fetchall()
-    criminal_info = [{'Criminals_last_name': row[0], 'Criminals_first_name': row[1], 'PhoneNumber': row[2], 'Criminals_address': row[3], 'ViolentOffenderStatus': row[4], 'ProbationStatus' : row[5]} for row in criminal_raw]
+    criminal_info = [{'Criminal_ID': row[0], 'Last': row[1], 'First': row[2], 'Street': row[3], 'City': row[4], 'State' : row[5],'Zip' : row[6],'Phone' : row[7],'V_status' : row[8],'P_status' : row[9]} for row in criminal_raw]
     return criminal_info
 
 @app.route('/GET_criminal_info', methods = ['GET']) # Get is the default btw
@@ -107,15 +109,19 @@ def GET_criminal_info():
 @app.route('/POST_criminal', methods = ['POST'])
 def POST_criminal():
     try:
-        last_name = request.form['Criminals_last_name']
-        first_name = request.form['Criminals_first_name']
-        phone_num = request.form['PhoneNumber']
-        address = request.form['Criminals_address']
-        violent_status = request.form['ViolentOffenderStatus']
-        probation_status = request.form['ProbationStatus']
+        Criminal_ID = request.form['Criminal_ID']
+        last_name = request.form['Last']
+        first_name = request.form['First']
+        phone_num = request.form['Phone']
+        Street = request.form['Street']
+        City = request.form['City']
+        State = request.form['State']
+        Zip = request.form['Zip']
+        violent_status = request.form['V_status']
+        probation_status = request.form['P_status']
         cursor = db.cursor()
-        query = 'INSERT INTO Criminals (Criminals_last_name,Criminals_first_name,PhoneNumber,Criminals_address,ViolentOffenderStatus,ProbationStatus) VALUES (%s,%s,%s,%s,%s,%s)'
-        cursor.execute(query,(last_name,first_name,phone_num,address,violent_status,probation_status))
+        query = 'INSERT INTO Criminals (Criminal_ID,Last,First,Phone,Street,City,State,Zip,V_status,P_status) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+        cursor.execute(query,(Criminal_ID,last_name,first_name,phone_num,Street,City,State,Zip,violent_status,probation_status))
         db.commit()
         cursor.close()
         return redirect(url_for('GET_criminal_info'))
@@ -123,6 +129,53 @@ def POST_criminal():
         error_message = "This criminal is already in the database."
         criminal_info = find_criminal_info()
         return render_template('Criminal_Information_Page.html',criminal_info = criminal_info, error=error_message)
+
+
+
+
+#Crime Code Methods
+
+
+def find_crimecode_info():
+    cursor = db.cursor()
+    cursor.execute('SELECT * FROM Crime_codes')
+    crimecode_raw = cursor.fetchall()
+    crimecode_info = [{'Crime_code': row[0], 'Code_description': row[1]} for row in crimecode_raw]
+    return crimecode_info
+
+@app.route('/GET_crimecode_info', methods = ['GET']) # Get is the default btw
+def GET_crimecode_info():
+    crimecode_info = find_crimecode_info()
+    return render_template('Crime_Code_Information_Page.html',crimecode_info = crimecode_info)
+
+
+# @app.route('/POST_criminal', methods = ['POST'])
+# def POST_criminal():
+#     try:
+#         Criminal_ID = request.form['Criminal_ID']
+#         last_name = request.form['Last']
+#         first_name = request.form['First']
+#         phone_num = request.form['Phone']
+#         Street = request.form['Street']
+#         City = request.form['City']
+#         State = request.form['State']
+#         Zip = request.form['Zip']
+#         violent_status = request.form['V_status']
+#         probation_status = request.form['P_status']
+#         cursor = db.cursor()
+#         query = 'INSERT INTO Criminals (Criminal_ID,Last,First,Phone,Street,City,State,Zip,V_status,P_status) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+#         cursor.execute(query,(Criminal_ID,last_name,first_name,phone_num,Street,City,State,Zip,violent_status,probation_status))
+#         db.commit()
+#         cursor.close()
+#         return redirect(url_for('GET_criminal_info'))
+#     except IntegrityError as e:
+#         error_message = "This criminal is already in the database."
+#         criminal_info = find_criminal_info()
+#         return render_template('Criminal_Information_Page.html',criminal_info = criminal_info, error=error_message)
+
+
+
+
 
 """
 @app.route('/edit_criminal/<int:criminal_id>', methods=['GET'])
