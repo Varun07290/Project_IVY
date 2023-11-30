@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 import mysql.connector
+import bcrypt
 from mysql.connector.errors import IntegrityError, DataError, DatabaseError
 
 
@@ -22,9 +23,49 @@ app.secret_key = 'team_ivy'
 db = mysql.connector.connect(host = 'localhost', user = 'root', password = '', database = 'proj')
 
 
+
 @app.route('/')
+def login_start():
+    return render_template('login.html')
+
+
+# Login Page
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        # Validate credentials
+        if validate_credentials(username, password):
+            return redirect(url_for('index'))  # Redirect to the index page if valid
+        else:
+            flash('Invalid username or password')  # Show error message
+
+    return render_template('login.html')
+
+# Index
+@app.route('/index')
 def index():
     return render_template('index.html')
+
+def validate_credentials(username, password):
+    try:
+        cursor = db.cursor()
+        sql = "SELECT * FROM users WHERE username = %s"
+        cursor.execute(sql, (username,))
+        user = cursor.fetchone()
+
+        if user and user[1] == password:
+            return True
+        else:
+            return False
+    finally:
+        cursor.close()
+
+
+
 
 
 #  Officer Methods Start Here
@@ -86,8 +127,39 @@ def delete_officer():
         print(e)
     return redirect(url_for('GET_officer_info'))
  
-    
 
+
+@app.route('/edit_officer', methods=['POST'])
+def edit_officer():
+    officer_id = request.form['Officer_ID']
+    last_name = request.form['Last']
+    first_name = request.form['First']
+    precinct = request.form['Precinct']
+    badge_number = request.form['Badge']
+    phone_number = request.form['Phone']
+    status = request.form['Status']
+
+    try:
+        cursor = db.cursor()
+
+        # SQL query to update officer details
+        query = """
+        UPDATE Officers 
+        SET Last = %s, First = %s, Precinct = %s, Badge = %s, Phone = %s, Status = %s
+        WHERE Officer_ID = %s
+        """
+        cursor.execute(query, (last_name, first_name, precinct, badge_number, phone_number, status, officer_id))
+        
+        db.commit()
+        cursor.close()
+        flash('Officer updated successfully.')
+        return redirect(url_for('GET_officer_info'))
+
+    except Exception as e:
+        db.rollback()
+        flash('Error occurred while updating the officer.')
+        print(e)
+        return redirect(url_for('GET_officer_info'))
 
 
 

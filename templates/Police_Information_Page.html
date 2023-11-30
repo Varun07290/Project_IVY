@@ -16,6 +16,12 @@
       <a class="nav-title-link" href="{{ url_for('index') }}">
       <span class="nav-title">Home Page</span>
     </a>`
+
+    <div class="nav-right">
+        <a class="nav-title-link" href="{{ url_for('login') }}">
+            <span class="nav-title">Logout</span>
+        </a>
+    </div>
     </div>
 
     <table>
@@ -65,6 +71,21 @@
       <input type="text" name="Phone" placeholder="Phone Number" required>
       <input type="text" name="Status" placeholder="Officer Status" required>
       <button type="submit">Submit</button>
+  </form>
+
+  <h1>Edit Officer Information</h1>
+
+  <form action="/edit_officer" method="post">
+      <input type="text" name="Officer_ID" placeholder="Enter Officer ID to Edit" required>
+
+      <h2>Update Officer Details</h2>
+      <input type="text" name="Last" placeholder="Last Name">
+      <input type="text" name="First" placeholder="First Name">
+      <input type="text" name="Precinct" placeholder="Precinct">
+      <input type="text" name="Badge" placeholder="Badge Number">
+      <input type="text" name="Phone" placeholder="Phone Number">
+      <input type="text" name="Status" placeholder="Officer Status (Active / Inactive)">
+      <button type="submit">Update Officer</button>
   </form>
 
   {% if error %}
