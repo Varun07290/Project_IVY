@@ -11,15 +11,7 @@
 
 <body>
     <h1>Crminal Information Table</h1>
-<!--
-    <form action="/add_course" method="post">
-        <input type="text" name="course_id" placeholder="Course ID" required>
-        <input type="text" name="call_id" placeholder="Call ID" required>
-        <input type="text" name="course_name" placeholder="Course Name" required>
-        <input type="number" name="credits" placeholder="Credits" required>
-        <button type="submit">Add Class</button>
-    </form>
--->
+
 
     <div class="navbar">
       <a class="nav-title-link" href="{{ url_for('index') }}">
@@ -45,8 +37,8 @@
                 <th>City</th>
                 <th>State</th>
                 <th>Zip</th>
-                <th>Violent Offender Status</th>
-                <th>Probation Status</th>
+                <th>Violent Offender Status: A (Active)/ I (Inactive)</th>
+                <th>Probation Status: A (Active)/ I (Inactive)</th>
             </tr>
         </thead>
         <tbody>
@@ -62,6 +54,14 @@
                     <td>{{ criminal.Zip }}</td>
                     <td>{{ criminal.V_status }}</td>
                     <td>{{ criminal.P_status }}</td>
+                    <td>
+                        <!-- Edit Button  -->
+                        <!-- Delete button -->
+                            <form action="{{ url_for('delete_criminal') }}" method="post">
+                                <input type="hidden" name="criminal_id" value="{{ criminal.Criminal_ID }}">
+                                <button type="submit" class = "button delete-button">Delete</button>
+                            </form>
+                        </td>
                 </tr>
             {% endfor %}
         </tbody>
@@ -84,6 +84,25 @@
 
       <button type="submit">Submit</button>
   </form>
+
+  <h1>Edit Criminal Information</h1>
+
+  <form action="/edit_criminal" method="post">
+      <input type="text" name="Criminal_ID" placeholder="Enter Criminal ID to Edit" required>
+
+      <h2>Update Crminal Details</h2>
+      <input type="text" name="Last" placeholder="Last Name">
+      <input type="text" name="First" placeholder="First Name">
+      <input type="text" name="Phone" placeholder="Phone Number">
+      <input type="text" name="Street" placeholder="Street">
+      <input type="text" name="City" placeholder="City">
+      <input type="text" name="State" placeholder="State">
+      <input type="text" name="Zip" placeholder="Zip">
+      <input type="text" name="V_status" placeholder="Violent Offender Status: Y (Yes)/ N (No)">
+      <input type="text" name="P_status" placeholder="Probation Status: Y (Yes)/ N (No)  ">
+      <button type="submit">Update Criminal</button>
+  </form>
+
 
   {% if error %}
   <div class="error-message">{{ error }}</div>

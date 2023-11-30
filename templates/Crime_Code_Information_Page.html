@@ -11,20 +11,16 @@
 
 <body>
     <h1>Crime Code Information Table</h1>
-<!--
-    <form action="/add_course" method="post">
-        <input type="text" name="course_id" placeholder="Course ID" required>
-        <input type="text" name="call_id" placeholder="Call ID" required>
-        <input type="text" name="course_name" placeholder="Course Name" required>
-        <input type="number" name="credits" placeholder="Credits" required>
-        <button type="submit">Add Class</button>
-    </form>
--->
 
     <div class="navbar">
       <a class="nav-title-link" href="{{ url_for('index') }}">
       <span class="nav-title">Home Page</span>
     </a>
+    <div class="nav-right">
+        <a class="nav-title-link" href="{{ url_for('login') }}">
+            <span class="nav-title">Logout</span>
+        </a>
+    </div>
     </div>
 
     <table>
@@ -39,6 +35,14 @@
                 <tr>
                     <td>{{ Crime_Codes.Crime_code }}</td>
                     <td>{{ Crime_Codes.Code_description }}</td>
+                    <td>
+                        <!-- Edit Button  -->
+                        <!-- Delete button -->
+                            <form action="{{ url_for('delete_crimecode') }}" method="post">
+                                <input type="hidden" name="crimecode" value="{{ Crime_Codes.Crime_code }}">
+                                <button type="submit" class = "button delete-button">Delete</button>
+                            </form>
+                        </td>
                 </tr>
             {% endfor %}
         </tbody>
@@ -51,6 +55,16 @@
       <input type="int" name="Crime_code" placeholder="Crime CODE" required>
       <input type="text" name="Code_description" placeholder="Code Description" required>
       <button type="submit">Submit</button>
+  </form>
+
+  <h1>Edit Crime Code Information</h1>
+
+  <form action="/edit_crimecode" method="post">
+      <input type="text" name="Crime_code" placeholder="Enter Crime code to Edit" required>
+
+      <h2>Update Officer Details</h2>
+      <input type="text" name="Code_description" placeholder="Code Description">
+      <button type="submit">Update Crime Code</button>
   </form>
 
   {% if error %}

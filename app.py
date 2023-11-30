@@ -201,6 +201,67 @@ def POST_criminal():
         error_message = "This criminal is already in the database."
         criminal_info = find_criminal_info()
         return render_template('Criminal_Information_Page.html',criminal_info = criminal_info, error=error_message)
+    except DataError as de:
+        error_message = "Please input appropriate values for the fields"
+        criminal_info = find_criminal_info()
+        return render_template('Criminal_Information_Page.html',criminal_info = criminal_info, error=error_message)
+    except DatabaseError as de:
+        error_message = "Please input appropriate values for the fields"
+        criminal_info = find_criminal_info()
+        return render_template('Criminal_Information_Page.html',criminal_info = criminal_info, error=error_message)
+
+
+@app.route('/delete_criminal', methods=['POST'])
+def delete_criminal():
+    criminal_id = request.form['criminal_id']
+    try:
+        cursor = db.cursor()
+        cursor.execute('DELETE FROM Criminals WHERE Criminal_ID = %s', (criminal_id,))
+        db.commit()
+        cursor.close()
+        flash('Criminal deleted successfully.')
+    except Exception as e:
+        db.rollback()
+        flash('Error occurred while deleting the criminal.')
+        print(e)
+    return redirect(url_for('GET_criminal_info'))
+ 
+
+
+@app.route('/edit_criminal', methods=['POST'])
+def edit_criminal():
+    criminal_ID = request.form['Criminal_ID']
+    last_name = request.form['Last']
+    first_name = request.form['First']
+    phone_num = request.form['Phone']
+    street = request.form['Street']
+    city = request.form['City']
+    state = request.form['State']
+    zip = request.form['Zip']
+    violent_status = request.form['V_status']
+    probation_status = request.form['P_status']
+
+    try:
+        cursor = db.cursor()
+
+        # SQL query to update criminal details
+        query = """
+        UPDATE Criminals 
+        SET Last= %s,First= %s,Phone= %s,Street= %s,City= %s,State= %s,Zip= %s,V_status= %s,P_status= %s
+        WHERE Criminal_ID= %s
+        """
+        cursor.execute(query, (last_name,first_name,phone_num,street,city,state,zip,violent_status,probation_status,criminal_ID))
+        
+        db.commit()
+        cursor.close()
+        flash('Criminal updated successfully.')
+        return redirect(url_for('GET_criminal_info'))
+
+    except Exception as e:
+        db.rollback()
+        flash('Error occurred while updating the criminal.')
+        print(e)
+        return redirect(url_for('GET_criminal_info'))
 
 
 
@@ -235,6 +296,61 @@ def POST_crimecode():
         error_message = "This crime code is already in the database."
         crimecode_info = find_crimecode_info()
         return render_template('Crime_Code_Information_Page.html',crimecode_info = crimecode_info, error=error_message)
+    except DataError as de:
+        error_message = "Please input appropriate values for the fields"
+        crimecode_info = find_crimecode_info()
+        return render_template('Crime_Code_Information_Page.html',crimecode_info = crimecode_info, error=error_message)
+    except DatabaseError as de:
+        error_message = "Please input appropriate values for the fields"
+        crimecode_info = find_crimecode_info()
+        return render_template('Crime_Code_Information_Page.html',crimecode_info = crimecode_info, error=error_message)
+
+
+@app.route('/delete_crimecode', methods=['POST'])
+def delete_crimecode():
+    crimecode = request.form['crimecode']
+    try:
+        cursor = db.cursor()
+        cursor.execute('DELETE FROM Crime_Codes WHERE Crime_code = %s', (crimecode,))
+        db.commit()
+        cursor.close()
+        flash('Crimecode deleted successfully.')
+    except Exception as e:
+        db.rollback()
+        flash('Error occurred while deleting the crimecode.')
+        print(e)
+    return redirect(url_for('GET_crimecode_info'))
+ 
+
+
+@app.route('/edit_crimecode', methods=['POST'])
+def edit_crimecode():
+    Crimecode = request.form['Crime_code']
+    codedes = request.form['Code_description']
+
+    try:
+        cursor = db.cursor()
+
+        # SQL query to update criminal details
+        query = """
+        UPDATE Crime_Codes 
+        SET Code_description = %s
+        WHERE Crime_code= %s
+        """
+        cursor.execute(query, (codedes,Crimecode))
+        
+        db.commit()
+        cursor.close()
+        flash('Crime Code updated successfully.')
+        return redirect(url_for('GET_crimecode_info'))
+
+    except Exception as e:
+        db.rollback()
+        flash('Error occurred while updating the crime code.')
+        print(e)
+        return redirect(url_for('GET_crimecode_info'))
+
+
 
 #Crime method
 
