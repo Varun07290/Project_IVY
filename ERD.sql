@@ -62,6 +62,11 @@ CREATE TABLE Sentences (
   CHECK (End_date >= Start_date)
 );
 
+CREATE TABLE Crime_codes (
+  Crime_code DECIMAL(3) NOT NULL,
+  Code_description VARCHAR(30) NOT NULL UNIQUE,
+  PRIMARY KEY (Crime_code)
+);
 
 CREATE TABLE Crime_charges (
   Charge_ID DECIMAL(10,0) NOT NULL,
@@ -77,16 +82,6 @@ CREATE TABLE Crime_charges (
   FOREIGN KEY (Crime_code) REFERENCES Crime_codes(Crime_code)
 );
 
-
-CREATE TABLE Crime_officers (
-  Crime_ID DECIMAL(9,0) NOT NULL,
-  Officer_ID DECIMAL(8,0) NOT NULL,
-  PRIMARY KEY (Crime_ID, Officer_ID),
-  Constraint crime_officers_fk1 FOREIGN KEY (Crime_ID) REFERENCES Crimes(Crime_ID),
-  Constraint crime_officers_fk2 FOREIGN KEY (Officer_ID) REFERENCES Officers(Officer_ID)
-);
-
-
 CREATE TABLE Officers (
   Officer_ID DECIMAL(8,0) NOT NULL,
   Last VARCHAR(15),
@@ -98,6 +93,16 @@ CREATE TABLE Officers (
   PRIMARY KEY (Officer_ID)
 );
 
+CREATE TABLE Crime_officers (
+  Crime_ID DECIMAL(9,0) NOT NULL,
+  Officer_ID DECIMAL(8,0) NOT NULL,
+  PRIMARY KEY (Crime_ID, Officer_ID),
+  Constraint crime_officers_fk1 FOREIGN KEY (Crime_ID) REFERENCES Crimes(Crime_ID),
+  Constraint crime_officers_fk2 FOREIGN KEY (Officer_ID) REFERENCES Officers(Officer_ID)
+);
+
+
+
 CREATE TABLE Appeals (
   Appeal_ID DECIMAL(5,0) NOT NULL,
   Crime_ID DECIMAL(9,0) NOT NULL,
@@ -106,10 +111,4 @@ CREATE TABLE Appeals (
   Status CHAR(1) DEFAULT 'P',
   PRIMARY KEY (Appeal_ID),
   FOREIGN KEY (Crime_ID) REFERENCES Crimes(Crime_ID)
-);
-
-CREATE TABLE Crime_codes (
-  Crime_code DECIMAL(3) NOT NULL,
-  Code_description VARCHAR(30) NOT NULL UNIQUE,
-  PRIMARY KEY (Crime_code)
 );

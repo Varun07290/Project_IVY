@@ -3,7 +3,6 @@ import mysql.connector
 from mysql.connector.errors import IntegrityError
 
 
-
 # POST, GET, PUT, and DELETE (API Methods that we need to implement)
 app = Flask(__name__)
 
