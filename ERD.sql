@@ -1,3 +1,4 @@
+
 CREATE TABLE Criminals (
     Criminal_ID DECIMAL(6,0) NOT NULL,
     Last VARCHAR(15),
