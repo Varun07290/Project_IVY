@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Database Test Criminal Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/typography.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/utilities.css') }}">
+    <script defer src="{{ url_for('static', filename='js/script.js') }}"></script>
+</head>
+
+<body>
+    <h1>Current Crime Officers Information</h1>
+
+
+    <div class="navbar">
+      <a class="nav-title-link" href="{{ url_for('index') }}">
+      <span class="nav-title">Home Page</span>
+    </a>`
+
+    <div class="nav-right">
+        <a class="nav-title-link" href="{{ url_for('login') }}">
+            <span class="nav-title">Logout</span>
+        </a>
+    </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Crime ID</th>
+                <th>Officer ID</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for crime_officer in crime_officer_info %}
+                <tr>
+                    <td>{{ crime_officer.Crime_ID }}</td>
+                    <td>{{ crime_officer.Officer_ID }}</td>
+                    <td>
+                    <!-- Edit Button  -->
+                    <!-- Delete button -->
+                        <form action="{{ url_for('delete_crime_officer') }}" method="post">
+                            <input type="hidden" name="crime_officer_id" value="{{ crime_officer.Crime_ID }}">
+                            <button type="submit" class = "button delete-button">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+
+    <h1>Add New Crime Officers</h1>
+
+    <form action="/POST_crime_officer" method="post">
+        <input type="text" name="Crime_ID" placeholder="Crime ID" required>
+        <input type="text" name="Officer_ID" placeholder="Officer ID" required>
+        <button type="submit">Submit</button>
+  </form>
+
+  <!-- <h1>Edit Crime_charges Information</h1>
+
+  <form action="/edit_crime_charge" method="post">
+      <input type="text" name="Charge_ID" placeholder="Enter Charge ID to Edit" required>
+      <input type="text" name="Crime_ID" placeholder="Crime ID" required>
+      <input type="text" name="Crime_code" placeholder="Crime Code" required>
+      
+      <h2>Update Crime_charges Details</h2>
+      <input type="text" name="Charge_status" placeholder="Charge Status">
+      <input type="text" name="Fine_amount" placeholder="Fine Amount">
+      <input type="text" name="Court_fee" placeholder="Court Fee">
+      <input type="text" name="Amount_paid" placeholder="Amount Paid">
+      <input type="date" name="Pay_due_date" placeholder="Payment Due Date">
+      <button type="submit">Update Crime_charges</button>
+  </form> -->
+
+  {% if error %}
+  <div class="error-message">{{ error }}</div>
+  {% endif %}
+
+</body>
+</html>
+

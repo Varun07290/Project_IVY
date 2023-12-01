@@ -2,7 +2,6 @@
 <html>
 <head>
     <title>Database Test Criminal Management System</title>
-
     <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/typography.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/utilities.css') }}">
@@ -10,51 +9,82 @@
 </head>
 
 <body>
-    <h1>Police Information Table</h1>
-<!--
-    <form action="/add_course" method="post">
-        <input type="text" name="course_id" placeholder="Course ID" required>
-        <input type="text" name="call_id" placeholder="Call ID" required>
-        <input type="text" name="course_name" placeholder="Course Name" required>
-        <input type="number" name="credits" placeholder="Credits" required>
-        <button type="submit">Add Class</button>
-    </form>
--->
+    <h1>Current Appeal Information</h1>
+
 
     <div class="navbar">
       <a class="nav-title-link" href="{{ url_for('index') }}">
       <span class="nav-title">Home Page</span>
-    </a>
+    </a>`
 
     <div class="nav-right">
         <a class="nav-title-link" href="{{ url_for('login') }}">
             <span class="nav-title">Logout</span>
         </a>
     </div>
-    
     </div>
 
     <table>
         <thead>
             <tr>
-                <th>Badge Number</th>
-                <th>Name</th>
-                <th>Precinct</th>
-                <th>Phone Number</th>
-                <th>Officer Status</th>
+                <th>Appeal ID</th>
+                <th>Crime ID</th>
+                <th>Filing Date</th>
+                <th>Hearing Date</th>
+                <th>Status: P (Pending)/ A (Approved)/ D (Disapproved)</th>
             </tr>
         </thead>
         <tbody>
-            {% for officer in Police_officer_info %}
+            {% for appeal in appeal_info %}
                 <tr>
-                    <td>{{ officer.Badge_number }}</td>
-                    <td>{{ officer.Name }}</td>
-                    <td>{{ officer.Precinct }}</td>
-                    <td>{{ officer.Phone_contact }}</td>
-                    <td>{{ officer.officer_Status }}</td>
+                    <td>{{ appeal.Appeal_ID }}</td>
+                    <td>{{ appeal.Crime_ID }}</td>
+                    <td>{{ appeal.Filing_date }}</td>
+                    <td>{{ appeal.Hearing_date }}</td>
+                    <td>{{ appeal.Status }}</td>
+                    <td>
+                    <!-- Edit Button  -->
+                    <!-- Delete button -->
+                        <form action="{{ url_for('delete_appeal') }}" method="post">
+                            <input type="hidden" name="appeal_id" value="{{ appeal.Appeal_ID }}">
+                            <button type="submit" class = "button delete-button">Delete</button>
+                        </form>
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>
+
     </table>
+
+    <h1>Add New Appeal</h1>
+
+    <form action="/POST_appeal" method="post">
+        <input type="text" name="Appeal_ID" placeholder="Appeal ID" required>
+        <input type="text" name="Crime_ID" placeholder="Crime ID" required>
+        <input type="date" name="Filing_date" placeholder="Filing Date" required>
+        <input type="date" name="Hearing_date" placeholder="Hearing Date" required>
+        <input type="text" name="Status" placeholder="Status" required>
+        <button type="submit">Submit</button>
+    </form>
+    
+
+  <h1>Edit Appeal Information</h1>
+
+  <form action="/edit_appeal" method="post">
+      <input type="text" name="Appeal_ID" placeholder="Appeal ID" required>
+      <input type="text" name="Crime_ID" placeholder="Crime ID" required>
+    
+      <h2>Update Appeal Details</h2>
+      <input type="date" name="Filing_date" placeholder="Filing Date">
+      <input type="date" name="Hearing_date" placeholder="Hearing Date">
+      <input type="text" name="Status" placeholder="Status">
+      <button type="submit">Update Appeal</button>
+  </form>
+
+  {% if error %}
+  <div class="error-message">{{ error }}</div>
+  {% endif %}
+
 </body>
 </html>
+
