@@ -125,11 +125,11 @@ CREATE TABLE Appeals (
 -- Appeals Status P (Pending), A (Approved), D (Disapproved)
 
 
-CREATE TABLE Login_Info (
-    UserName VARCHAR(20) NOT NULL UNIQUE,
-    Password VARCHAR(20) NOT NULL,
-    Write_Access BOOLEAN NOT NULL,
-    PRIMARY KEY (UserName)
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY UNIQUE,
+    username VARCHAR(20) NOT NULL UNIQUE,
+    password VARCHAR(20) NOT NULL,
+    write_access BOOLEAN NOT NULL
 );
 
 

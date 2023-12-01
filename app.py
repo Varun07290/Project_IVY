@@ -10,26 +10,27 @@ app = Flask(__name__)
 app.secret_key = 'team_ivy'
 
 
-# config = {
-#   'user': 'root',
-#   'password': 'root',
-#   'host': 'localhost',
-#   #'unix_socket': '/Applications/XAMPP/xamppfiles/var/mysql/mysql.sock',
-#   'database': 'proj',
-#   #'raise_on_warnings': True
-# }
-
-# db = mysql.connector.connect(**config)
-db = mysql.connector.connect(host = 'localhost', user = 'root', password = '', database = 'proj')
+config = {
+  'user': 'root',
+  'password': 'root',
+  'host': 'localhost',
+  'unix_socket': '/Applications/MAMP/tmp/mysql/mysql.sock',
+  'database': 'final_project_testing_1',
+  'raise_on_warnings': True
+}
 
 
+db = mysql.connector.connect(**config)
+#db = mysql.connector.connect(host = 'localhost', user = 'root', password = '', database = 'proj')
+
+
+# Login Page
 
 @app.route('/')
 def login_start():
     return render_template('login.html')
 
 
-# Login Page
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -57,7 +58,7 @@ def validate_credentials(username, password):
         cursor.execute(sql, (username,))
         user = cursor.fetchone()
 
-        if user and user[1] == password:
+        if user and user[2] == password:
             return True
         else:
             return False
@@ -65,6 +66,35 @@ def validate_credentials(username, password):
         cursor.close()
 
 
+
+# Create Account
+@app.route('/create_account', methods=['GET', 'POST'])
+def create_account():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password'] #.encode('utf-8')
+
+        cursor = db.cursor()
+
+        # Check if username already exists
+        cursor.execute('SELECT * FROM users WHERE username = %s', (username,))
+        if cursor.fetchone():
+            flash('Username already exists. Choose a different one.')
+            return render_template('create_account.html', error='Username already exists')
+
+        # Hash the password
+        #hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
+
+        # Insert the new user into the database
+        insert_query = 'INSERT INTO users (username, password) VALUES (%s, %s)'
+        cursor.execute(insert_query, (username, password)) #hashed_password.decode('utf-8')))
+        db.commit()
+        db.close()
+
+        #flash('Account created successfully. Please login.')
+        return redirect(url_for('index'))
+
+    return render_template('create_account.html')
 
 
 
@@ -219,32 +249,6 @@ def find_crimecode_info():
 def GET_crimecode_info():
     crimecode_info = find_crimecode_info()
     return render_template('Crime_Code_Information_Page.html',crimecode_info = crimecode_info)
-
-
-# @app.route('/POST_criminal', methods = ['POST'])
-# def POST_criminal():
-#     try:
-#         Criminal_ID = request.form['Criminal_ID']
-#         last_name = request.form['Last']
-#         first_name = request.form['First']
-#         phone_num = request.form['Phone']
-#         Street = request.form['Street']
-#         City = request.form['City']
-#         State = request.form['State']
-#         Zip = request.form['Zip']
-#         violent_status = request.form['V_status']
-#         probation_status = request.form['P_status']
-#         cursor = db.cursor()
-#         query = 'INSERT INTO Criminals (Criminal_ID,Last,First,Phone,Street,City,State,Zip,V_status,P_status) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
-#         cursor.execute(query,(Criminal_ID,last_name,first_name,phone_num,Street,City,State,Zip,violent_status,probation_status))
-#         db.commit()
-#         cursor.close()
-#         return redirect(url_for('GET_criminal_info'))
-#     except IntegrityError as e:
-#         error_message = "This criminal is already in the database."
-#         criminal_info = find_criminal_info()
-#         return render_template('Criminal_Information_Page.html',criminal_info = criminal_info, error=error_message)
-
 
 
 
