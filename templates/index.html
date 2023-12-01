@@ -55,14 +55,24 @@
         </div>
     </div>
 
-        <div class="container">
-            <div class="button-container">
-                <a class="button_test" href="{{ url_for('GET_officer_info') }}">View Police Information</a>
-                <a class="button_test" href="{{url_for('GET_criminal_info')}}">View Criminal Information</a>
-                <a class="button_test" href="#">View Appeals Information</a>
-                <a class="button_test" href="{{url_for('GET_crimecode_info')}}">View Crime Code Information</a>
-            </div>
+    <div class="container">
+      <div class="button-container">
+          <div class="button-row">
+              <a class="button_test" href="{{ url_for('GET_officer_info') }}">View Police Information</a>
+              <a class="button_test" href="{{url_for('GET_criminal_info')}}">View Criminal Information</a>
+              <a class="button_test" href="{{url_for('GET_crime_info')}}">View Crime Information</a>
+              <a class="button_test" href="{{url_for('GET_appeal_info')}}">View Appeals Information</a>
+              <a class="button_test" href="{{url_for('GET_crime_charge_info')}}">View Crime Charge Information</a>
+          </div>
+          <div class="button-row">
+              <a class="button_test" href="{{url_for('GET_crimecode_info')}}">View Crime Code Information</a>
+              <a class="button_test" href="{{url_for('GET_alias_info')}}">View Alias Information</a>
+              <a class="button_test" href="{{url_for('GET_prob_officer_info')}}">View Prob Officer Information</a>
+              <a class="button_test" href="{{url_for('GET_sentence_info')}}">View Sentences Information</a>
+              <a class="button_test" href="{{url_for('GET_crime_officer_info')}}">View Crime Officers Information</a>
+          </div>
         </div>
+    </div>
 
     
 

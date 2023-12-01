@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Database Test Criminal Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/typography.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/utilities.css') }}">
+    <script defer src="{{ url_for('static', filename='js/script.js') }}"></script>
+</head>
+
+<body>
+    <h1>Current Alias Information</h1>
+
+
+    <div class="navbar">
+      <a class="nav-title-link" href="{{ url_for('index') }}">
+      <span class="nav-title">Home Page</span>
+    </a>`
+
+    <div class="nav-right">
+        <a class="nav-title-link" href="{{ url_for('login') }}">
+            <span class="nav-title">Logout</span>
+        </a>
+    </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Alias ID</th>
+                <th>Criminal ID</th>
+                <th>Alias</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for alias in alias_info %}
+                <tr>
+                    <td>{{ alias.Alias_ID }}</td>
+                    <td>{{ alias.Criminal_ID }}</td>
+                    <td>{{ alias.Alias }}</td>
+                    <td>
+                    <!-- Edit Button  -->
+                    <!-- Delete button -->
+                        <form action="{{ url_for('delete_alias') }}" method="post">
+                            <input type="hidden" name="alias_id" value="{{ alias.Alias_ID }}">
+                            <button type="submit" class = "button delete-button">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+
+    <h1>Add New Alias</h1>
+
+    <form action="/POST_alias" method="post">
+      <input type="text" name="Alias_ID" placeholder="Alias ID" required>
+      <input type="text" name="Criminal_ID" placeholder="Criminal ID" required>
+      <input type="text" name="Alias" placeholder="Alias" required>
+      <button type="submit">Submit</button>
+  </form>
+
+  <h1>Edit Alias Information</h1>
+
+  <form action="/edit_alias" method="post">
+      <input type="text" name="Alias_ID" placeholder="Enter Alias ID to Edit" required>
+      <input type="text" name="Criminal_ID" placeholder="Criminal ID" required>
+
+      <h2>Update Alias Details</h2>
+      
+      <input type="text" name="Alias" placeholder="Alias">
+      <button type="submit">Update Alias</button>
+  </form>
+
+  {% if error %}
+  <div class="error-message">{{ error }}</div>
+  {% endif %}
+
+</body>
+</html>
+

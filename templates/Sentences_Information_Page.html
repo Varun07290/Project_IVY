@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Database Test Criminal Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/typography.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/utilities.css') }}">
+    <script defer src="{{ url_for('static', filename='js/script.js') }}"></script>
+</head>
+
+<body>
+    <h1>Current Sentences Information</h1>
+
+
+    <div class="navbar">
+      <a class="nav-title-link" href="{{ url_for('index') }}">
+      <span class="nav-title">Home Page</span>
+    </a>`
+
+    <div class="nav-right">
+        <a class="nav-title-link" href="{{ url_for('login') }}">
+            <span class="nav-title">Logout</span>
+        </a>
+    </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Sentence ID</th>
+                <th>Criminal ID</th>
+                <th>Type</th>
+                <th>Probation Officer ID</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Violations</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sentence in sentence_info %}
+                <tr>
+                    <td>{{ sentence.Sentence_ID }}</td>
+                    <td>{{ sentence.Criminal_ID }}</td>
+                    <td>{{ sentence.Type }}</td>
+                    <td>{{ sentence.Prob_ID }}</td>
+                    <td>{{ sentence.Start_date }}</td>
+                    <td>{{ sentence.End_date }}</td>
+                    <td>{{ sentence.Violations }}</td>
+
+                    <td>
+                    <!-- Edit Button  -->
+                    <!-- Delete button -->
+                        <form action="{{ url_for('delete_sentence') }}" method="post">
+                            <input type="hidden" name="sentence_id" value="{{ sentence.Sentence_ID }}">
+                            <button type="submit" class = "button delete-button">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="100%">Notes:Type: J (Jail)/ H (House Arrest)/ P (Probation)</td>
+            </tr>
+        </tbody>
+
+    </table>
+
+    <h1>Add New Sentence</h1>
+
+    <form action="/POST_sentence" method="post">
+        <input type="text" name="Sentence_ID" placeholder="Sentence ID" required>
+        <input type="text" name="Criminal_ID" placeholder="Criminal ID" required>
+        <input type="text" name="Type" placeholder="Type" required>
+        <input type="text" name="Prob_ID" placeholder="Probation Officer ID" required>
+        <input type="date" name="Start_date" placeholder="Start Date" required>
+        <input type="date" name="End_date" placeholder="End Date" required>
+        <input type="text" name="Violations" placeholder="Violations" required>        
+      <button type="submit">Submit</button>
+  </form>
+
+  <h1>Edit Sentence Information</h1>
+
+  <form action="/edit_sentence" method="post">
+      <input type="text" name="Sentence_ID" placeholder="Sentence ID" required>
+      <input type="text" name="Criminal_ID" placeholder="Criminal ID" required>
+      <input type="text" name="Prob_ID" placeholder="Probation Officer ID" required>
+      
+      <h2>Update Sentence Details</h2>
+      <input type="text" name="Type" placeholder="Type">
+      <input type="date" name="Start_date" placeholder="Start Date">
+      <input type="date" name="End_date" placeholder="End Date">
+      <input type="text" name="Violations" placeholder="Violations">        
+      <button type="submit">Update Sentence</button>
+  </form>
+
+  {% if error %}
+  <div class="error-message">{{ error }}</div>
+  {% endif %}
+
+</body>
+</html>
+

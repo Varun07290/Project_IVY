@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Database Test Criminal Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/typography.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/utilities.css') }}">
+    <script defer src="{{ url_for('static', filename='js/script.js') }}"></script>
+</head>
+
+<body>
+    <h1>Current Crime Information</h1>
+
+
+    <div class="navbar">
+      <a class="nav-title-link" href="{{ url_for('index') }}">
+      <span class="nav-title">Home Page</span>
+    </a>`
+
+    <div class="nav-right">
+        <a class="nav-title-link" href="{{ url_for('login') }}">
+            <span class="nav-title">Logout</span>
+        </a>
+    </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Crime ID</th>
+                <th>Criminal ID</th>
+                <th>Classification</th>
+                <th>Date Charged</th>
+                <th>Status</th>
+                <th>Hearing Date</th>
+                <th>Appeal Cut Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for crime in crime_info %}
+                <tr>
+                    <td>{{ crime.Crime_ID }}</td>
+                    <td>{{ crime.Criminal_ID }}</td>
+                    <td>{{ crime.Classification }}</td>
+                    <td>{{ crime.Date_charged }}</td>
+                    <td>{{ crime.Status }}</td>
+                    <td>{{ crime.Hearing_date }}</td>
+                    <td>{{ crime.Appeal_cut_date }}</td>
+                <td>
+                    <!-- Edit Button  -->
+                    <!-- Delete button -->
+                        <form action="{{ url_for('delete_crime') }}" method="post">
+                            <input type="hidden" name="crime_id" value="{{ crime.Crime_ID }}">
+                            <button type="submit" class = "button delete-button">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="100%">Notes:Classification - F (Felony), M (Misdemeanor), O (Other), U (Undefined)</td>
+            </tr>
+            <tr>
+                <td colspan="100%">Status - CL (Closed), CA (Can Appeal), IA (In Appeal)</td>
+            </tr>
+        </tbody>
+
+    </table>
+
+    <h1>Add New Crime</h1>
+
+    <form action="/POST_crime" method="post">
+      <input type="text" name="Crime_ID" placeholder="Crime ID" required>
+      <input type="text" name="Criminal_ID" placeholder="Criminal ID" required>
+      <input type="text" name="Classification" placeholder="Classification" required>
+      <input type="date" name="Date_charged" placeholder="Date Charged" required>
+      <input type="text" name="Status" placeholder="Status" required>
+      <input type="date" name="Hearing_date" placeholder="Hearing Date" required>
+      <input type="date" name="Appeal_cut_date" placeholder="Appeal Cut Date" required>
+      <button type="submit">Submit</button>
+  </form>
+
+  <h1>Edit Crime Information</h1>
+
+  <form action="/edit_crime" method="post">
+      <input type="text" name="Crime_ID" placeholder="Enter Crime ID to Edit" required>
+      <input type="text" name="Criminal_ID" placeholder="Enter Criminal ID to Edit" required>
+      
+      <h2>Update Crime Details</h2>
+      <input type="text" name="Classification" placeholder="Classification">
+      <input type="date" name="Date_charged" placeholder="Date Charged">
+      <input type="text" name="Status" placeholder="Status">
+      <input type="date" name="Hearing_date" placeholder="Hearing Date">
+      <input type="date" name="Appeal_cut_date" placeholder="Appeal Cut Date">
+      <button type="submit">Update Crime</button>
+  </form>
+
+  {% if error %}
+  <div class="error-message">{{ error }}</div>
+  {% endif %}
+
+</body>
+</html>
+

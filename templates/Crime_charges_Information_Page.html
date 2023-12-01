@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Database Test Criminal Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/typography.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/utilities.css') }}">
+    <script defer src="{{ url_for('static', filename='js/script.js') }}"></script>
+</head>
+
+<body>
+    <h1>Current Crime Charges Information</h1>
+
+
+    <div class="navbar">
+      <a class="nav-title-link" href="{{ url_for('index') }}">
+      <span class="nav-title">Home Page</span>
+    </a>`
+
+    <div class="nav-right">
+        <a class="nav-title-link" href="{{ url_for('login') }}">
+            <span class="nav-title">Logout</span>
+        </a>
+    </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Charge ID</th>
+                <th>Crime ID</th>
+                <th>Crime Code</th>
+                <th>Charge Status</th>
+                <th>Fine Amount</th>
+                <th>Court Fee</th>
+                <th>Amount Paid</th>
+                <th>Payment Due Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for crime_charge in crime_charge_info %}
+                <tr>
+                    <td>{{ crime_charge.Charge_ID }}</td>
+                    <td>{{ crime_charge.Crime_ID }}</td>
+                    <td>{{ crime_charge.Crime_code }}</td>
+                    <td>{{ crime_charge.Charge_status }}</td>
+                    <td>{{ crime_charge.Fine_amount }}</td>
+                    <td>{{ crime_charge.Court_fee }}</td>
+                    <td>{{ crime_charge.Amount_paid }}</td>
+                    <td>{{ crime_charge.Pay_due_date }}</td>
+                    <td>
+                    <!-- Edit Button  -->
+                    <!-- Delete button -->
+                        <form action="{{ url_for('delete_crime_charge') }}" method="post">
+                            <input type="hidden" name="crime_charge_id" value="{{ crime_charge.Charge_ID }}">
+                            <button type="submit" class = "button delete-button">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="100%">Notes:Charge_status: PD (Pending), GL (Guilty), NG (Not Guilty)</td>
+            </tr>
+        </tbody>
+
+    </table>
+
+    <h1>Add New Crime Charges</h1>
+
+    <form action="/POST_crime_charge" method="post">
+        <input type="text" name="Charge_ID" placeholder="Charge ID" required>
+        <input type="text" name="Crime_ID" placeholder="Crime ID" required>
+        <input type="text" name="Crime_code" placeholder="Crime Code" required>
+        <input type="text" name="Charge_status" placeholder="Charge Status" required>
+        <input type="text" name="Fine_amount" placeholder="Fine Amount" required>
+        <input type="text" name="Court_fee" placeholder="Court Fee" required>
+        <input type="text" name="Amount_paid" placeholder="Amount Paid" required>
+        <input type="date" name="Pay_due_date" placeholder="Payment Due Date" required>
+        <button type="submit">Submit</button>
+  </form>
+
+  <h1>Edit Crime Charges Information</h1>
+
+  <form action="/edit_crime_charge" method="post">
+      <input type="text" name="Charge_ID" placeholder="Enter Charge ID to Edit" required>
+      <input type="text" name="Crime_ID" placeholder="Crime ID" required>
+      <input type="text" name="Crime_code" placeholder="Crime Code" required>
+      
+      <h2>Update Crime Charges Details</h2>
+      <input type="text" name="Charge_status" placeholder="Charge Status">
+      <input type="text" name="Fine_amount" placeholder="Fine Amount">
+      <input type="text" name="Court_fee" placeholder="Court Fee">
+      <input type="text" name="Amount_paid" placeholder="Amount Paid">
+      <input type="date" name="Pay_due_date" placeholder="Payment Due Date">
+      <button type="submit">Update Crime Charges</button>
+  </form>
+
+  {% if error %}
+  <div class="error-message">{{ error }}</div>
+  {% endif %}
+
+</body>
+</html>
+
