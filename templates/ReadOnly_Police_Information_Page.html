@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Database Test Criminal Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/typography.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/utilities.css') }}">
+    <script defer src="{{ url_for('static', filename='js/script.js') }}"></script>
+</head>
+
+<body>
+    <h1>Current Officer Information</h1>
+
+
+    <div class="navbar">
+      <a class="nav-title-link" href="{{ url_for('index') }}">
+      <span class="nav-title">Home Page</span>
+    </a>`
+
+    <div class="nav-right">
+        <a class="nav-title-link" href="{{ url_for('login') }}">
+            <span class="nav-title">Logout</span>
+        </a>
+    </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Officer ID</th>
+                <th>Last Name</th>
+                <th>First Name</th>
+                <th>Precinct</th>
+                <th>Badge Number</th>
+                <th>Phone Number</th>
+                <th>Officer Status: A (Active)/ I (Inactive)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for officer in officer_info %}
+                <tr>
+                    <td>{{ officer.Officer_ID }}</td>
+                    <td>{{ officer.Last }}</td>
+                    <td>{{ officer.First }}</td>
+                    <td>{{ officer.Precinct }}</td>
+                    <td>{{ officer.Badge }}</td>
+                    <td>{{ officer.Phone }}</td>
+                    <td>{{ officer.Status }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+
+  {% if error %}
+  <div class="error-message">{{ error }}</div>
+  {% endif %}
+
+</body>
+</html>
+

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Database Test Criminal Management System</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/typography.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/utilities.css') }}">
+    <script defer src="{{ url_for('static', filename='js/script.js') }}"></script>
+</head>
+
+<body>
+    <h1>Crminal Information Table</h1>
+
+
+    <div class="navbar">
+      <a class="nav-title-link" href="{{ url_for('index') }}">
+      <span class="nav-title">Home Page</span>
+    </a>
+
+    <div class="nav-right">
+        <a class="nav-title-link" href="{{ url_for('login') }}">
+            <span class="nav-title">Logout</span>
+        </a>
+    </div>
+    
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Criminal ID</th>
+                <th>Last Name</th>
+                <th>First Name</th>
+                <th>Phone Number</th>
+                <th>Street</th>
+                <th>City</th>
+                <th>State</th>
+                <th>Zip</th>
+                <th>Violent Offender Status: A (Active)/ I (Inactive)</th>
+                <th>Probation Status: A (Active)/ I (Inactive)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for criminal in criminal_info %}
+                <tr>
+                    <td>{{ criminal.Criminal_ID }}</td>
+                    <td>{{ criminal.Last }}</td>
+                    <td>{{ criminal.First }}</td>
+                    <td>{{ criminal.Phone }}</td>
+                    <td>{{ criminal.Street }}</td>
+                    <td>{{ criminal.City }}</td>
+                    <td>{{ criminal.State }}</td>
+                    <td>{{ criminal.Zip }}</td>
+                    <td>{{ criminal.V_status }}</td>
+                    <td>{{ criminal.P_status }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+
+
+  {% if error %}
+  <div class="error-message">{{ error }}</div>
+  {% endif %}
+
+</body>
+</html>
