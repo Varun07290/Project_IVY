@@ -17,18 +17,20 @@
         <a class="nav-title-link" href="{{ url_for('index') }}">
         <span class="nav-title">Home Page</span>
       </a>
-
-      <div class="nav-right">
-        <a class="nav-title-link" href="{{ url_for('create_account') }}">
-            <span class="nav-title">Create New Account</span>
-        </a>
-    </div>
   
-      <div class="nav-right">
-        <a class="nav-title-link" href="{{ url_for('login') }}">
-            <span class="nav-title">Logout</span>
-        </a>
+
+    <div>
+    <a class ="nav-title-link" href = "{{url_for('create_account') }}">
+      <span class = "nav-title"> Create Account</span>
+    </a>
     </div>
+
+    <div class="nav-right">
+      <a class="nav-title-link" href="{{ url_for('login') }}">
+          <span class="nav-title">Logout</span>
+      </a>
+
+  </div>
 
 
     </div>
@@ -46,7 +48,7 @@
 
         <div id="portfolio-header-text-container">
             <div class="header-text">
-              <span class="main-title">Welcome User, to NYU's Criminal Database Management System</span>
+              <span class="main-title">Welcome {{ username }}, to NYU's Criminal Database Management System</span>
               <div class="body-text">
                 Created by Database Developers: Varun Aravapalli, Ishaan Poojari and Yiqiao Zhou
               </div>
