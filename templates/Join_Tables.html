@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>test</title>
+    <h1>Table Joining</h1>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/typography.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/utilities.css') }}">
+    <script defer src="{{ url_for('static', filename='js/script.js') }}"></script>
+</head>
+
+<div class="navbar">
+    <a class="nav-title-link" href="{{ url_for('index') }}">
+    <span class="nav-title">Home Page</span>
+  </a>
+</div>
+
+<body>
+
+    <h2>Select Tables to Join</h2>
+    <form action="/joins" method="post">
+        <div>
+            <input type="checkbox" id="Alias" name="table" value="Alias">
+            <label for="officers">Alias</label>
+        </div>
+        <div>
+            <input type="checkbox" id="Appeals" name="table" value="Appeals">
+            <label for="criminals">Appeals</label>
+        </div>
+        <div>
+            <input type="checkbox" id="Crimes" name="table" value="Crimes">
+            <label for="criminals">Crimes</label>
+        </div>
+        <div>
+            <input type="checkbox" id="Crime_charges" name="table" value="Crime_charges">
+            <label for="criminals">Crime_charges</label>
+        </div>
+        <div>
+            <input type="checkbox" id="Crime_codes" name="table" value="Crime_codes">
+            <label for="criminals">Crime_codes</label>
+        </div>
+        <div>
+            <input type="checkbox" id="Crime_officers" name="table" value="Crime_officers">
+            <label for="criminals">Crime_officers</label>
+        </div>
+        <div>
+            <input type="checkbox" id="Criminals" name="table" value="Criminals">
+            <label for="criminals">Criminals</label>
+        </div>
+        <div>
+            <input type="checkbox" id="Officers" name="table" value="Officers">
+            <label for="criminals">Officers</label>
+        </div>
+        <div>
+            <input type="checkbox" id="Prob_officer" name="table" value="Prob_officer">
+            <label for="criminals">Prob_officer</label>
+        </div>
+        <div>
+            <input type="checkbox" id="Sentences" name="table" value="Sentences">
+            <label for="criminals">Sentences</label>
+        </div>
+        <!-- Repeat the above div for each table in your database -->
+        <button type="submit">Join Tables</button>
+    </form>
+
+    <!-- Section to Display Joined Data -->
+    <h2>Joined Table Data</h2>
+    <h3>Joined Tables:
+        {% if tables %}
+            {% for table in tables %}
+                {{ table }}, 
+            {% endfor %}
+        {% endif %}
+    </h3>
+    {% if error %}
+        <div class="error-message">{{ error }}</div>
+    {% endif %}
+    <table>
+        <thead>
+            <tr>
+                {% if joined_data %}
+                    {% for key in joined_data[0].keys() %}
+                        <th>{{ key }}</th>
+                    {% endfor %}
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in joined_data %}
+                <tr>
+                    {% for value in data.values() %}
+                        <td>{{ value }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

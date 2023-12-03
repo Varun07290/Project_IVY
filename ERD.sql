@@ -125,11 +125,11 @@ CREATE TABLE Appeals (
 -- Appeals Status P (Pending), A (Approved), D (Disapproved)
 
 
-CREATE TABLE users (
-    id INT AUTO_INCREMENT PRIMARY KEY UNIQUE,
-    username VARCHAR(20) NOT NULL UNIQUE,
-    password VARCHAR(20) NOT NULL,
-    write_access BOOLEAN NOT NULL
+CREATE TABLE Users (
+    ID INT AUTO_INCREMENT PRIMARY KEY UNIQUE,
+    Username VARCHAR(20) NOT NULL UNIQUE,
+    User_Password VARCHAR(20) NOT NULL,
+    Write_access BOOLEAN NOT NULL
 );
 
 
@@ -262,14 +262,14 @@ INSERT INTO Appeals (Appeal_ID, Crime_ID, Filing_date, Hearing_date, Status) VAL
 (10009, 100000009, '2022-10-15', '2023-02-25', 'D'),
 (10010, 100000010, '2022-11-19', '2023-04-01', 'P');
 
-INSERT INTO Login_Info (UserName, Password, Write_Access) VALUES
-('user1', 'password1', FALSE),
-('user2', 'password2', FALSE),
-('user3', 'password3', FALSE),
-('user4', 'password4', FALSE),
-('user5', 'password5', FALSE),
-('user6', 'password6', FALSE),
-('user7', 'password7', FALSE),
-('user8', 'password8', FALSE),
-('user9', 'password9', FALSE),
-('admin', 'adminpass', TRUE);
+INSERT INTO users (ID, UserName, User_Password, Write_Access) VALUES
+(00001, 'user1', 'password1', FALSE),
+(00002,'user2', 'password2', FALSE),
+(00003, 'user3', 'password3', FALSE),
+(00004,'user4', 'password4', FALSE),
+(00005,'user5', 'password5', FALSE),
+(00006,'user6', 'password6', FALSE),
+(00007,'user7', 'password7', FALSE),
+(00008,'user8', 'password8', FALSE),
+(00009,'user9', 'password9', FALSE),
+(00010,'admin', 'adminpass', TRUE);

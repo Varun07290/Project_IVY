@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AIQueryConversion</title>
+    <h1>AI Natural Language to SQL Conversion</h1>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/typography.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/utilities.css') }}">
+    <script defer src="{{ url_for('static', filename='js/script.js') }}"></script>
+</head>
+
+<div class="navbar">
+    <a class="nav-title-link" href="{{ url_for('index') }}">
+    <span class="nav-title">Home Page</span>
+  </a>
+</div>
+
+<body>
+
+    <h2>Enter a question for the database in English </h2>
+    <h3>Your question will be converted to SQL and the relavent data will be returned </h3>
+
+
+    <form action="/ai" method="post">
+        <label for="Query">Query:</label>
+        <input type="text" id="user_question" name="user_question">
+        <button type="submit">Submit</button>
+    </form>
+    {% if error %}
+        <p style="color:red;">{{ error }}</p>
+    {% endif %}
+
+    <!-- Section to Display AI Data -->
+    <h2>AI Output</h2>
+    <h3>SQL Query:
+        {% if query %}
+            {{ query }} 
+        {% endif %}
+    </h3>
+
+
+    <!-- Section to Display Joined Data -->
+    <h2>Output Data</h2>
+    <h3>Question:
+        {% if question %}
+            {{ question }} 
+        {% endif %}
+    </h3>
+    <table>
+        <thead>
+            <tr>
+                {% if joined_data %}
+                    {% for key in joined_data[0].keys() %}
+                        <th>{{ key }}</th>
+                    {% endfor %}
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in joined_data %}
+                <tr>
+                    {% for value in data.values() %}
+                        <td>{{ value }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

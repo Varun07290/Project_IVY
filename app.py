@@ -2,8 +2,9 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 import mysql.connector
 import bcrypt
 from mysql.connector.errors import IntegrityError, DataError, DatabaseError
-
-
+import os
+import openai
+from openai import OpenAI
 
 # POST, GET, PUT, and DELETE (API Methods that we need to implement)
 app = Flask(__name__)
@@ -54,7 +55,7 @@ def index():
 def validate_credentials(username, password):
     try:
         cursor = db.cursor()
-        sql = "SELECT * FROM users WHERE username = %s"
+        sql = "SELECT * FROM Users WHERE username = %s"
         cursor.execute(sql, (username,))
         user = cursor.fetchone()
 
@@ -115,8 +116,11 @@ def create_account():
 def find_officer_info():
     cursor = db.cursor()
     cursor.execute('SELECT * FROM Officers')
+    column_names = cursor.column_names
     officer_raw = cursor.fetchall()
-    officer_info = [{'Officer_ID': row[0], 'Last': row[1], 'First': row[2], 'Precinct': row[3], 'Badge': row[4], 'Phone': row[5], 'Status': row[6]} for row in officer_raw]
+    # officer_info = [{'Officer_ID': row[0], 'Last': row[1], 'First': row[2], 'Precinct': row[3], 'Badge': row[4], 'Phone': row[5], 'Status': row[6]} for row in officer_raw]
+    officer_info = [dict(zip(column_names,row)) for row in officer_raw]
+
     return officer_info
 
 @app.route('/GET_officer_info', methods = ['GET']) # Get is the default btw
@@ -1092,6 +1096,252 @@ def delete_criminal(criminal_id):
 
 
 
+# # Appeals Methods
+
+# def find_appeal_info():
+#    cursor = db.cursor()
+#    cursor.execute('SELECT * FROM Appeals')
+#    Appeals_raw = cursor.fetchall()
+#    Appeals_info = [{'Appeal_ID': row[0], 'Crime_ID': row[1], 'Filing_date': row[2], 'Hearing_date': row[3], 'Status': row[4]} for row in Appeals_raw]
+#    return Appeals_info
+
+# @app.route('/GET_appeal_info', methods = ['GET']) # Get is the default btw
+# def GET_appeal_info():
+#     appeal_info = find_appeal_info()
+#     return render_template('Appeals_Information_Page.html', appeal_info = appeal_info)
+
+
+
+# Joining Tables Page Method
+
+@app.route('/join_tables') # Get is the default btw
+def GET_join_tables():
+    return render_template('Join_Tables.html')
+
+# Routing the Join requests from the user
+@app.route('/joins', methods = ['POST'])
+def GET_joined_tables():
+    selected_tables = request.form.getlist('table')
+
+    if not selected_tables:
+        error_message = "Please select at least one table to join"
+        officer_info = find_officer_info()
+        return render_template('Join_Tables.html', error=error_message)
+    # joined_data = perform_table_join(selected_tables)
+    cursor = db.cursor()
+    query = 'SELECT * FROM '+selected_tables[0]
+    for table in selected_tables[1:]:
+        query += ' NATURAL JOIN '+table
+    cursor.execute(query)
+    column_names = cursor.column_names
+    joined_data_raw = cursor.fetchall()
+    if joined_data_raw == []:
+        error_message = "Cannot join these tables"
+        officer_info = find_officer_info()
+        return render_template('Join_Tables.html', error=error_message)
+    cursor.close()
+    joined_data = [dict(zip(column_names, row)) for row in joined_data_raw]
+    return render_template('Join_Tables.html', joined_data = joined_data, tables=selected_tables)
+
+
+# AI Natural Language to SQL Query Page Methods
+
+@app.route('/AI_NL_to_SQL')
+def GET_query():
+    return render_template('AI_NL_to_SQL.html')
+
+# Routing the AI NL to SQL Query requests from the user
+@app.route('/ai', methods=['GET', 'POST'])
+def AI_query():
+    if request.method == 'POST':
+
+        database_schema = """ 
+    CREATE TABLE Criminals (
+    Criminal_ID DECIMAL(6,0) NOT NULL,
+    Last VARCHAR(15),
+    First VARCHAR(10),
+    Street VARCHAR(30),
+    City VARCHAR(20),
+    State CHAR(2),
+    Zip CHAR(5),
+    Phone CHAR(10),
+    V_status CHAR(1) DEFAULT 'N',
+    P_status CHAR(1) DEFAULT 'N',
+    PRIMARY KEY (Criminal_ID)
+);
+-- Criminals V_status Y (Yes), N (No) 
+-- Criminals P_status Y (Yes), N (No) 
+
+CREATE TABLE Crimes (
+    Crime_ID DECIMAL(9,0) NOT NULL ,
+    Criminal_ID DECIMAL(6,0) NOT NULL,
+    Classification CHAR(1) DEFAULT 'U',
+    Date_charged DATE,
+    Status CHAR(2) NOT NULL,
+    Hearing_date DATE,
+    Appeal_cut_date DATE,
+    PRIMARY KEY (Crime_ID),
+    FOREIGN KEY (Criminal_ID) REFERENCES Criminals(Criminal_ID),
+    CHECK (Hearing_date > Date_charged)
+);
+-- Crimes Classification F (Felony), M (Misdemeanor), O (Other), U (Undefined) 
+-- Crimes Status CL (Closed), CA (Can Appeal), IA (In Appeal) 
+
+CREATE TABLE Alias (
+  Alias_ID DECIMAL(6,0) NOT NULL,
+  Criminal_ID DECIMAL(6,0) NOT NULL,
+  Alias VARCHAR(20),
+  PRIMARY KEY (Alias_ID),
+  FOREIGN KEY (Criminal_ID) REFERENCES Criminals(Criminal_ID)
+);
+
+CREATE TABLE Prob_officer (
+  Prob_ID DECIMAL(5,0) NOT NULL,
+  Last VARCHAR(15),
+  First VARCHAR(10),
+  Street VARCHAR(30),
+  City VARCHAR(20),
+  State CHAR(2),
+  Zip CHAR(5),
+  Phone CHAR(10),
+  Email VARCHAR(30),
+  Status CHAR(1) NOT NULL,
+  PRIMARY KEY (Prob_ID)
+);
+-- Prob_officers Status A (Active), I (Inactive) 
+
+
+CREATE TABLE Sentences (
+  Sentence_ID DECIMAL(6,0) NOT NULL,
+  Criminal_ID DECIMAL(6,0) NOT NULL,
+  Type CHAR(1),
+  Prob_ID DECIMAL(5,0) NOT NULL,
+  Start_date DATE,
+  End_date DATE,
+  Violations DECIMAL(3,0) NOT NULL,
+  PRIMARY KEY (Sentence_ID),
+  FOREIGN KEY (Criminal_ID) REFERENCES Criminals(Criminal_ID),
+  FOREIGN KEY (Prob_ID) REFERENCES Prob_officer(Prob_ID),
+  CHECK (End_date >= Start_date)
+);
+-- Sentences Type J ( Jail Period), H (House Arrest), P (Probation) 
+
+
+CREATE TABLE Crime_codes (
+  Crime_code DECIMAL(3) NOT NULL,
+  Code_description VARCHAR(30) NOT NULL UNIQUE,
+  PRIMARY KEY (Crime_code)
+);
+
+CREATE TABLE Crime_charges (
+  Charge_ID DECIMAL(10,0) NOT NULL,
+  Crime_ID DECIMAL(9,0) NOT NULL,
+  Crime_code DECIMAL(3,0) NOT NULL,
+  Charge_status CHAR(2),
+  Fine_amount DECIMAL(7, 2),
+  Court_fee DECIMAL(7, 2),
+  Amount_paid DECIMAL(7, 2),
+  Pay_due_date DATE,
+  PRIMARY KEY (Charge_ID),
+  FOREIGN KEY (Crime_ID) REFERENCES Crimes(Crime_ID),
+  FOREIGN KEY (Crime_code) REFERENCES Crime_codes(Crime_code)
+);
+
+-- Crime_charges Charge_status PD (Pending), GL (Guilty), NG (Not Guilty) 
+
+ 
+CREATE TABLE Officers (
+  Officer_ID DECIMAL(8,0) NOT NULL,
+  Last VARCHAR(15),
+  First VARCHAR(10),
+  Precinct CHAR(4) NOT NULL,
+  Badge VARCHAR(14) UNIQUE,
+  Phone CHAR(10),
+  Status CHAR(1) DEFAULT 'A',
+  PRIMARY KEY (Officer_ID)
+);
+-- Officers Status A (Active), I (Inactive) 
+
+CREATE TABLE Crime_officers (
+  Crime_ID DECIMAL(9,0) NOT NULL,
+  Officer_ID DECIMAL(8,0) NOT NULL,
+  PRIMARY KEY (Crime_ID, Officer_ID),
+  Constraint crime_officers_fk1 FOREIGN KEY (Crime_ID) REFERENCES Crimes(Crime_ID),
+  Constraint crime_officers_fk2 FOREIGN KEY (Officer_ID) REFERENCES Officers(Officer_ID)
+);
+
+
+CREATE TABLE Appeals (
+  Appeal_ID DECIMAL(5,0) NOT NULL,
+  Crime_ID DECIMAL(9,0) NOT NULL,
+  Filing_date DATE,
+  Hearing_date DATE,
+  Status CHAR(1) DEFAULT 'P',
+  PRIMARY KEY (Appeal_ID),
+  FOREIGN KEY (Crime_ID) REFERENCES Crimes(Crime_ID)
+);
+-- Appeals Status P (Pending), A (Approved), D (Disapproved)
+
+
+CREATE TABLE Users (
+    ID INT AUTO_INCREMENT PRIMARY KEY UNIQUE,
+    Username VARCHAR(20) NOT NULL UNIQUE,
+    User_Password VARCHAR(20) NOT NULL,
+    Write_access BOOLEAN NOT NULL
+);"""
+
+
+        OPENAI_API_KEY = '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'
+
+        # Ensure the API key is set
+        if not OPENAI_API_KEY:
+            raise ValueError("No OpenAI secret key found. Set the OPENAI_API_KEY environment variable.")
+
+        # Set the API key
+        openai.api_key = OPENAI_API_KEY
+
+        # Your existing code for the query
+        question = request.form['user_question']
+
+        # Create a client and make a request
+
+        response = openai.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant for a police records website that is connected to a database of police officers and criminals. When the user asks a question, you must output the SQL query that can be run against the database to return the data that answers the question. ONLY RETURN THE SQL QUERY, DO NOT INLCUDE ANY OTHER TEXT PLEASE! Use the provided database schema to answer the questions. The SQL commands to create the database schema are as follows: "+database_schema},
+                {"role": "user", "content": question}
+            ]
+        )
+        query = response.choices[0].message.content
+
+        # answer = response['choices'][0].get('message', {}).get('content', '')
+
+        cursor = db.cursor()
+        try:
+            cursor.execute(query)
+            column_names = cursor.column_names
+            joined_data_raw = cursor.fetchall()
+
+            if joined_data_raw == []:
+                error_message = "This question cannot be answered with the database."
+                officer_info = find_officer_info()
+                return render_template('AI_NL_to_SQL.html', error=error_message)
+            cursor.close()
+            joined_data = [dict(zip(column_names, row)) for row in joined_data_raw]
+    
+            return render_template('AI_NL_to_SQL.html', query=query, joined_data = joined_data, question = question)
+
+        except mysql.connector.errors.ProgrammingError as e:
+            if e.errno == 1054:
+            
+                error_message = "This question cannot be answered with the database."
+                officer_info = find_officer_info()
+                return render_template('AI_NL_to_SQL.html', error=error_message)
+
+
+        finally:
+            # Make sure to close the cursor and connection
+            cursor.close()
 
 
 if __name__ == '__main__':
