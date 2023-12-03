@@ -1348,12 +1348,3 @@ if __name__ == '__main__':
     app.run(debug=True)
 
 
-
-
-
-"""
-# In no order
-1. finish the front-end HTML/CSS pages
-2. create the rest of the API methods for each table
-3. error handling, and sending error messages to the front-end GUI
-"""
