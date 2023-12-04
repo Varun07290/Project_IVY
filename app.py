@@ -5,22 +5,30 @@ from mysql.connector.errors import IntegrityError, DataError, DatabaseError
 import os
 import openai
 from openai import OpenAI
+import pymysql
 
 # POST, GET, PUT, and DELETE (API Methods that we need to implement)
 app = Flask(__name__)
 app.secret_key = 'team_ivy'
 
+# Local database hosting code - uncomment this when you want to run the app locally
+# config = {
+#   'user': 'root',
+#   'password': 'root',
+#   'host': 'localhost',
+#   'unix_socket': '/Applications/MAMP/tmp/mysql/mysql.sock',
+#   'database': 'final_project_testing_1',
+#   'raise_on_warnings': True
+# }
 
-config = {
-  'user': 'root',
-  'password': 'root',
-  'host': 'localhost',
-  'unix_socket': '/Applications/MAMP/tmp/mysql/mysql.sock',
-  'database': 'final_project_testing_1',
-  'raise_on_warnings': True
-}
+# db = mysql.connector.connect(**config)
 
-db = mysql.connector.connect(**config)
+
+# AWS database hosting code 
+db = pymysql.connect(host ='teamivy2.cf2oulnhlquf.us-east-2.rds.amazonaws.com', port = 3306, user = 'admin', password = 'password')
+
+
+
 cursor = db.cursor()
 
 # WHEN YOU SET UP THE DB FOR THE FIRST TIME, UN COMMENT THIS SO THAT YOU CAN ACCESS UNHASHED PASSWORDS
