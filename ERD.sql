@@ -273,3 +273,14 @@ INSERT INTO users (ID, UserName, User_Password, Write_Access) VALUES
 (00008,'user8', 'password8', FALSE),
 (00009,'user9', 'password9', FALSE),
 (00010,'admin', 'adminpass', TRUE);
+
+
+CREATE ROLE admin;
+CREATE ROLE user;
+CREATE USER 'admin_main' IDENTIFIED BY 'admin_main';
+CREATE USER 'user_main' IDENTIFIED BY 'user_main';
+GRANT ALL PRIVILEGES ON DATABASE TEAMIVY TO admin;
+GRANT SELECT ON DATABASE TEAMIVY TO user;
+GRANT admin TO admin_main;
+GRANT police TO user_main;
+

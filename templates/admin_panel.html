@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel</title>
+</head>
+<body>
+    <h1>Admin Panel</h1>
+    
+    <!-- Form to grant or revoke access control -->
+    <form method="POST" action="/grant_access_control">
+        <h2>Grant Access Control</h2>
+        <label for="grant_username">Username:</label>
+        <input type="text" id="grant_username" name="grant_username" required><br>
+        <button type="submit">Grant Access Control</button>
+    </form>
+
+    <form method="POST" action="/revoke_access_control">
+        <h2>Revoke Access Control</h2>
+        <label for="revoke_username">Username:</label>
+        <input type="text" id="revoke_username" name="revoke_username" required><br>
+        <button type="submit">Revoke Access Control</button>
+    </form>
+
+    <a href="/index">Back to Home</a>
+</body>
+</html>

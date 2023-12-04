@@ -13,6 +13,11 @@
         <label for="password">Password:</label>
         <input type="password" id="password" name="password" required><br>
 
+        <label for="access_control">Admin Control:</label>
+        <input type="radio" id="admin-control-yes" name="admin_control" value="true"> Yes
+        <input type="radio" id="admin-control-no" name="admin_control" value="false"> No<br>
+
+
         <button type="submit">Create Account</button>
     </form>
     {% if error %}

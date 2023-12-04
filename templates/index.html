@@ -20,15 +20,23 @@
   
 
     <div>
+    {% if user_has_access_control %}
     <a class ="nav-title-link" href = "{{url_for('create_account') }}">
       <span class = "nav-title"> Create Account</span>
     </a>
+    {% endif %}
     </div>
 
     <div class="nav-right">
       <a class="nav-title-link" href="{{ url_for('login') }}">
           <span class="nav-title">Logout</span>
       </a>
+
+      {% if user_has_access_control %}
+      <a class="nav-title-link" href="/admin_panel">
+          <span class="nav-title">Admin Panel</span>
+      </a>
+      {% endif %}
 
   </div>
 

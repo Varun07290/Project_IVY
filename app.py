@@ -21,8 +21,18 @@ config = {
 }
 
 db = mysql.connector.connect(**config)
+cursor = db.cursor()
 
+"""
+# Fetch all users
+cursor.execute("SELECT id, password FROM Users")
+users = cursor.fetchall()
 
+for user_id, plain_text_password in users:
+    hashed_password = bcrypt.hashpw(plain_text_password.encode('utf-8'), bcrypt.gensalt())
+    cursor.execute("UPDATE Users SET password = %s WHERE id = %s", (hashed_password, user_id))
+
+"""
 
 @app.route('/')
 def login_start():
@@ -50,7 +60,9 @@ def login():
 @app.route('/index')
 def index():
     username = session.get('username', 'User')  # Get username from session, default to 'User'
-    return render_template('index.html', username=username)
+    user_has_access_control = 'username' in session and has_access_control(session['username'])
+
+    return render_template('index.html', username=username, user_has_access_control = user_has_access_control)
 
 def validate_credentials(username, password):
     try:
@@ -59,10 +71,12 @@ def validate_credentials(username, password):
         cursor.execute(sql, (username,))
         user = cursor.fetchone()
 
-        if user and user[2] == password:
-            return True
-        else:
-            return False
+        if user:
+            hashed_password = user[2].encode('utf-8')
+            if bcrypt.checkpw(password.encode('utf-8'), hashed_password):
+                return True
+            else:
+                return False
     finally:
         cursor.close()
 
@@ -71,7 +85,15 @@ def validate_credentials(username, password):
 def create_account():
     if request.method == 'POST':
         username = request.form['username']
-        password = request.form['password'].encode('utf-8')
+        password = request.form['password'].encode('utf-8')  # Encode the password
+        access_control = request.form.get('access_control')  # Get the admin control value
+
+        if access_control == 'true':
+            access_control = 0
+        else:
+            access_control= 1
+
+        hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
 
         # Connect to the database
         db = mysql.connector.connect(**config)
@@ -83,12 +105,10 @@ def create_account():
             flash('Username already exists. Choose a different one.')
             return render_template('create_account.html', error='Username already exists')
 
-        # Hash the password
-        #hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
 
         # Insert the new user into the database
-        insert_query = 'INSERT INTO users (username, password) VALUES (%s, %s)'
-        cursor.execute(insert_query, (username, password))
+        insert_query = 'INSERT INTO users (username, password, access_control) VALUES (%s, %s, %s)'
+        cursor.execute(insert_query, (username, hashed_password,access_control))
         db.commit()
         cursor.close()
         db.close()
@@ -99,16 +119,113 @@ def create_account():
     return render_template('create_account.html')
 
 
-# CREATE TABLE Appeals (
-#   Appeal_ID DECIMAL(5,0) NOT NULL,
-#   Crime_ID DECIMAL(9,0) NOT NULL,
-#   Filing_date DATE,
-#   Hearing_date DATE,
-#   Status CHAR(1) DEFAULT 'P',
-#   PRIMARY KEY (Appeal_ID),
-#   FOREIGN KEY (Crime_ID) REFERENCES Crimes(Crime_ID)
-# );
-# -- Appeals Status P (Pending), A (Approved), D (Disapproved)
+
+
+## DB Security Methods:
+
+def has_access_control(username):
+    db = mysql.connector.connect(**config)
+    cursor = db.cursor()
+
+    cursor.execute('SELECT access_control FROM users WHERE username = %s', (username,))
+    result = cursor.fetchone()
+
+    cursor.close()
+    db.close()
+
+    if result and result[0]:  # Check if access_control is True
+        return True
+    else:
+        return False
+    
+@app.route('/admin_panel', methods=['GET', 'POST'])
+def admin_panel():
+    if 'username' not in session:
+        return redirect(url_for('login_start'))
+
+    username = session['username']
+    
+    if not has_access_control(username):
+        flash('You do not have access control to perform this action.')
+        return redirect(url_for('index'))
+
+    # Handle form submissions and execute SQL statements here for database modifications
+    # ...
+
+    return render_template('admin_panel.html')
+
+
+def grant_access_control(username):
+    db = mysql.connector.connect(**config)
+    cursor = db.cursor()
+
+    try:
+        cursor.execute('UPDATE users SET access_control = 1 WHERE username = %s', (username,))
+        db.commit()
+        flash(f'Access control granted to user: {username}')
+    except Exception as e:
+        db.rollback()
+        flash(f'Error granting access control: {str(e)}')
+    finally:
+        cursor.close()
+        db.close()
+
+# Function to revoke access control from a user using SQL REVOKE statement
+def revoke_access_control(username):
+    db = mysql.connector.connect(**config)
+    cursor = db.cursor()
+
+    try:
+        cursor.execute('UPDATE users SET access_control = 0 WHERE username = %s', (username,))
+        db.commit()
+        flash(f'Access control revoked from user: {username}')
+    except Exception as e:
+        db.rollback()
+        flash(f'Error revoking access control: {str(e)}')
+    finally:
+        cursor.close()
+        db.close()
+
+# Your existing Flask routes here...
+
+# Route to handle granting access control
+@app.route('/grant_access_control', methods=['POST'])
+def grant_access_control_route():
+    if 'username' not in session:
+        return redirect(url_for('login_start'))
+
+    username = session['username']
+
+    if not has_access_control(username):
+        flash('You do not have access control to perform this action.')
+        return redirect(url_for('admin_panel'))
+
+    if request.method == 'POST':
+        grant_username = request.form.get('grant_username')
+        if grant_username:
+            grant_access_control(grant_username)
+
+    return redirect(url_for('admin_panel'))
+
+# Route to handle revoking access control
+@app.route('/revoke_access_control', methods=['POST'])
+def revoke_access_control_route():
+    if 'username' not in session:
+        return redirect(url_for('login_start'))
+
+    username = session['username']
+
+    if not has_access_control(username):
+        flash('You do not have access control to perform this action.')
+        return redirect(url_for('admin_panel'))
+
+    if request.method == 'POST':
+        revoke_username = request.form.get('revoke_username')
+        if revoke_username:
+            revoke_access_control(revoke_username)
+
+    return redirect(url_for('admin_panel'))
+
 
 
 #  Officer Methods Start Here
@@ -325,7 +442,8 @@ def find_crimecode_info():
 @app.route('/GET_crimecode_info', methods = ['GET']) # Get is the default btw
 def GET_crimecode_info():
     crimecode_info = find_crimecode_info()
-    return render_template('Crime_Code_Information_Page.html',crimecode_info = crimecode_info)
+    user_has_access_control = 'username' in session and has_access_control(session['username'])
+    return render_template('Crime_Code_Information_Page.html',crimecode_info = crimecode_info, user_has_access_control = user_has_access_control)
 
 @app.route('/POST_crimecode', methods = ['POST'])
 def POST_crimecode():
