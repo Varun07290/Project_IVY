@@ -11,13 +11,13 @@ import pymysql
 app = Flask(__name__)
 app.secret_key = 'team_ivy'
 
-# Local database hosting code - uncomment this when you want to run the app locally
+# Local database hosting code on MAMP - uncomment this when you want to run the app locally
 # config = {
 #   'user': 'root',
 #   'password': 'root',
 #   'host': 'localhost',
 #   'unix_socket': '/Applications/MAMP/tmp/mysql/mysql.sock',
-#   'database': 'final_project_testing_1',
+#   'database': 'proj', #final_project_testing_1
 #   'raise_on_warnings': True
 # }
 
@@ -25,7 +25,7 @@ app.secret_key = 'team_ivy'
 
 
 # AWS database hosting code 
-db = pymysql.connect(host ='teamivy2.cf2oulnhlquf.us-east-2.rds.amazonaws.com', port = 3306, user = 'admin', password = 'password')
+db = pymysql.connect(host ='teamivy2.cf2oulnhlquf.us-east-2.rds.amazonaws.com', port = 3306, user = 'admin', password = 'password', db = 'TEAMIVY')
 
 
 
@@ -33,15 +33,15 @@ cursor = db.cursor()
 
 # WHEN YOU SET UP THE DB FOR THE FIRST TIME, UN COMMENT THIS SO THAT YOU CAN ACCESS UNHASHED PASSWORDS
 
-"""
+'''
 # Fetch all users
-cursor.execute("SELECT id, password FROM Users")
+cursor.execute("SELECT id, User_Password FROM Users")
 users = cursor.fetchall()
 
 for user_id, plain_text_password in users:
     hashed_password = bcrypt.hashpw(plain_text_password.encode('utf-8'), bcrypt.gensalt())
-    cursor.execute("UPDATE Users SET password = %s WHERE id = %s", (hashed_password, user_id))
-"""
+    cursor.execute("UPDATE Users SET User_Password = %s WHERE id = %s", (hashed_password, user_id))
+'''
 
 @app.route('/')
 def login_start():
@@ -136,7 +136,7 @@ def has_access_control(username):
     db = mysql.connector.connect(**config)
     cursor = db.cursor()
 
-    cursor.execute('SELECT access_control FROM users WHERE username = %s', (username,))
+    cursor.execute('SELECT Write_access FROM users WHERE username = %s', (username,))
     result = cursor.fetchone()
 
     cursor.close()
