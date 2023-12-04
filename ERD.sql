@@ -262,7 +262,7 @@ INSERT INTO Appeals (Appeal_ID, Crime_ID, Filing_date, Hearing_date, Status) VAL
 (10009, 100000009, '2022-10-15', '2023-02-25', 'D'),
 (10010, 100000010, '2022-11-19', '2023-04-01', 'P');
 
-INSERT INTO users (ID, UserName, User_Password, Write_Access) VALUES
+INSERT INTO Users (ID, UserName, User_Password, Write_Access) VALUES
 (00001, 'user1', 'password1', FALSE),
 (00002,'user2', 'password2', FALSE),
 (00003, 'user3', 'password3', FALSE),

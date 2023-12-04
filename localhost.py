@@ -7,25 +7,28 @@ import openai
 from openai import OpenAI
 import pymysql
 
+''' This file is to host a local database on MAMP.'''
+
+
 # POST, GET, PUT, and DELETE (API Methods that we need to implement)
 app = Flask(__name__)
 app.secret_key = 'team_ivy'
 
 # Local database hosting code on MAMP - uncomment this when you want to run the app locally
-# config = {
-#   'user': 'root',
-#   'password': 'root',
-#   'host': 'localhost',
-#   'unix_socket': '/Applications/MAMP/tmp/mysql/mysql.sock',
-#   'database': 'proj', #final_project_testing_1
-#   'raise_on_warnings': True
-# }
+config = {
+  'user': 'root',
+  'password': 'root',
+  'host': 'localhost',
+  'unix_socket': '/Applications/MAMP/tmp/mysql/mysql.sock',
+  'database': 'proj', #final_project_testing_1
+  'raise_on_warnings': True
+}
 
-# db = mysql.connector.connect(**config)
+db = mysql.connector.connect(**config)
 
 
 # AWS database hosting code 
-db = pymysql.connect(host ='teamivy2.cf2oulnhlquf.us-east-2.rds.amazonaws.com', port = 3306, user = 'admin', password = 'password', db = 'TEAMIVY')
+# db = pymysql.connect(host ='teamivy2.cf2oulnhlquf.us-east-2.rds.amazonaws.com', port = 3306, user = 'admin', password = 'password', db = 'TEAMIVY')
 
 
 
@@ -33,7 +36,7 @@ cursor = db.cursor()
 
 # WHEN YOU SET UP THE DB FOR THE FIRST TIME, UN COMMENT THIS SO THAT YOU CAN ACCESS UNHASHED PASSWORDS
 
-
+'''
 # Fetch all users
 cursor.execute("SELECT id, User_Password FROM Users")
 users = cursor.fetchall()
@@ -41,7 +44,7 @@ users = cursor.fetchall()
 for user_id, plain_text_password in users:
     hashed_password = bcrypt.hashpw(plain_text_password.encode('utf-8'), bcrypt.gensalt())
     cursor.execute("UPDATE Users SET User_Password = %s WHERE id = %s", (hashed_password, user_id))
-
+'''
 
 @app.route('/')
 def login_start():
@@ -68,15 +71,15 @@ def login():
 # Index
 @app.route('/index')
 def index():
-    username = session.get('Username', 'User')  # Get username from session, default to 'User'
-    user_has_access_control = 'Username' in session and has_access_control(session['Username'])
+    username = session.get('username', 'User')  # Get username from session, default to 'User'
+    user_has_access_control = 'username' in session and has_access_control(session['username'])
 
     return render_template('index.html', username=username, user_has_access_control = user_has_access_control)
 
 def validate_credentials(username, password):
     try:
         cursor = db.cursor()
-        sql = "SELECT * FROM Users WHERE Username = %s"
+        sql = "SELECT * FROM Users WHERE username = %s"
         cursor.execute(sql, (username,))
         user = cursor.fetchone()
 
@@ -133,10 +136,10 @@ def create_account():
 ## DB Security Methods:
 
 def has_access_control(username):
-    # db = mysql.connector.connect(**config)
+    db = mysql.connector.connect(**config)
     cursor = db.cursor()
 
-    cursor.execute('SELECT Write_access FROM Users WHERE username = %s', (username,))
+    cursor.execute('SELECT Write_access FROM users WHERE username = %s', (username,))
     result = cursor.fetchone()
 
     cursor.close()
@@ -242,7 +245,7 @@ def revoke_access_control_route():
 def find_officer_info():
     cursor = db.cursor()
     cursor.execute('SELECT * FROM Officers')
-    column_names = [i[0] for i in cursor.description]
+    column_names = cursor.column_names
     officer_raw = cursor.fetchall()
     # officer_info = [{'Officer_ID': row[0], 'Last': row[1], 'First': row[2], 'Precinct': row[3], 'Badge': row[4], 'Phone': row[5], 'Status': row[6]} for row in officer_raw]
     officer_info = [dict(zip(column_names,row)) for row in officer_raw]
@@ -1260,7 +1263,7 @@ def GET_joined_tables():
     for table in selected_tables[1:]:
         query += ' NATURAL JOIN '+table
     cursor.execute(query)
-    column_names = [i[0] for i in cursor.description]
+    column_names = cursor.column_names
     joined_data_raw = cursor.fetchall()
     if joined_data_raw == []:
         error_message = "Cannot join these tables"
@@ -1446,8 +1449,8 @@ CREATE TABLE Users (
         cursor = db.cursor()
         try:
             cursor.execute(query)
-            # column_names = cursor.column_names
-            column_names = [i[0] for i in cursor.description]
+            column_names = cursor.column_names
+            # column_names = [i[0] for i in cursor.description]
             joined_data_raw = cursor.fetchall()
 
             if joined_data_raw == []:
