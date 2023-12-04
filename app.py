@@ -23,6 +23,8 @@ config = {
 db = mysql.connector.connect(**config)
 cursor = db.cursor()
 
+# WHEN YOU SET UP THE DB FOR THE FIRST TIME, UN COMMENT THIS SO THAT YOU CAN ACCESS UNHASHED PASSWORDS
+
 """
 # Fetch all users
 cursor.execute("SELECT id, password FROM Users")
@@ -31,7 +33,6 @@ users = cursor.fetchall()
 for user_id, plain_text_password in users:
     hashed_password = bcrypt.hashpw(plain_text_password.encode('utf-8'), bcrypt.gensalt())
     cursor.execute("UPDATE Users SET password = %s WHERE id = %s", (hashed_password, user_id))
-
 """
 
 @app.route('/')
