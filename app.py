@@ -25,7 +25,7 @@ app.secret_key = 'team_ivy'
 
 
 # AWS database hosting code 
-db = pymysql.connect(host ='teamivy2.cf2oulnhlquf.us-east-2.rds.amazonaws.com', port = 3306, user = 'admin', password = 'password', db = 'TEAMIVY')
+db = pymysql.connect(host ='ENTER AWS RDS Connection', port = "PORT", user = '', password = '', db = '')
 
 
 
@@ -1418,7 +1418,7 @@ CREATE TABLE Users (
 );"""
 
 
-        OPENAI_API_KEY = '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'
+        OPENAI_API_KEY = 'ENTER OPENAI KEY'
 
         # Ensure the API key is set
         if not OPENAI_API_KEY:
