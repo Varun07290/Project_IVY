@@ -1,5 +1,4 @@
 # Project_IVY
-Databases Final Project
 
 Setup Instructions:
 
